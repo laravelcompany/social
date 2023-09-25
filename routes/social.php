@@ -13,6 +13,10 @@ Route::group(['middleware' => ['web','auth'],'prefix' => 'social', 'as' => 'soci
     //generate the index page
     Route::get('/', [SocialController::class, 'index'])->name('index');
     Route::get('/view/{id}', [SocialController::class, 'view'])->name('view');
+    Route::get('/edit/{id}', [SocialController::class, 'edit'])->name('edit');
+    Route::get('/create', [SocialController::class, 'create'])->name('create');
+    Route::post('/save', [SocialController::class, 'save'])->name('save');
+    Route::get('/destroy/{id}', [SocialController::class, 'destroy'])->name('destroy');
 
 
     //LinkedIN

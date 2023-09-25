@@ -2,7 +2,11 @@
 declare(strict_types=1);
 
 namespace Cornatul\Social\Http;
+use Cornatul\Social\Actions\CreateNewSocialAccount;
 use Cornatul\Social\Models\SocialAccount;
+use Cornatul\Social\Repositories\SocialRepository;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Config;
 use Illuminate\View\View;
@@ -31,6 +35,23 @@ class SocialController extends Controller
         );
     }
 
+    public final function create(): View
+    {
+        return view('social::create',
+        );
+    }
+
+    public final function save(CreateNewSocialAccount $request, SocialRepository $repository): RedirectResponse
+    {
+
+        $account = $repository->createAccount(
+            $request->get('name'),
+            (int) $request->get('user_id')
+        );
+
+        return redirect()->route('social.index')->withMessage('Account has been saved');
+    }
+
 
     public final function edit(int $id): View
     {
@@ -40,8 +61,22 @@ class SocialController extends Controller
         );
     }
 
-    public final function update(int $id): View
+
+    public final function update(int $id, SocialRepository $repository, CreateNewSocialAccount $request): View
     {
-        //@todo implement this to update just the json field
+        $account = $repository->updateAccount(
+            $id,
+            $request->get('name'),
+            $request->get('user_id')
+        );
+
+        return redirect()->route('social.index')->withMessage('Account has been updated');
+    }
+
+
+    public final function destroy(int $id, SocialRepository $repository): RedirectResponse
+    {
+        $repository->destroyAccount($id);
+        return redirect()->route('social.index')->withMessage('Account has been deleted');
     }
 }

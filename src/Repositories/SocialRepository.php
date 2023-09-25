@@ -4,6 +4,7 @@ namespace Cornatul\Social\Repositories;
 
 use Cornatul\Social\Contracts\SocialContract;
 use Cornatul\Social\DTO\ConfigurationDTO;
+use Cornatul\Social\Models\SocialAccount;
 use Cornatul\Social\Models\SocialAccountConfiguration;
 use Cornatul\Social\Service\SocialOauthService;
 use Illuminate\Database\QueryException;
@@ -24,6 +25,39 @@ class SocialRepository
         // Add other account types here if needed
     ];
 
+
+    public final function createAccount(string $name, int $userId): SocialAccount
+    {
+        return SocialAccount::create([
+            'account' => $name,
+            'user_id' => $userId,
+        ]);
+    }
+
+
+    public final function getAccount(int $id): SocialAccount
+    {
+        return SocialAccount::with('configuration')->find($id);
+    }
+
+    //UPDATE
+
+    public final function updateAccount(int $id, string $name, int $userId): SocialAccount
+    {
+        $account = SocialAccount::find($id);
+        $account->account = $name;
+        $account->user_id = $userId;
+        $account->save();
+        return $account;
+    }
+
+    //destroy account
+    public final function destroyAccount(int $id): void
+    {
+        $account = SocialAccount::find($id);
+        $account->delete();
+    }
+
     /**
      * @throws \Exception
      */
@@ -32,10 +66,6 @@ class SocialRepository
         $data = SocialAccountConfiguration::find($account);
 
         $credentials = ConfigurationDTO::from($data->configuration);
-
-        if (!$credentials) {
-            throw new QueryException("Account with id {$account} not found in the database");
-        }
 
         $providerClass = $this->providerClasses[$data->type] ?? null;
 
@@ -51,7 +81,7 @@ class SocialRepository
     /**
      * @throws \Exception
      */
-    public function getAccountFromSession(): int
+    public final function getAccountFromSession(): int
     {
         $account = session()->get('account');
 

@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @method static create(array $data)
+ * @method static find(int $id)
  */
 class SocialAccount extends Model
 {
