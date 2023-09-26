@@ -17,5 +17,5 @@ class ConfigurationDTO extends Data
     public ?string $clientId;
     public ?string $clientSecret;
     public ?string $redirectUri;
-    public ?array $scopes = [];
+    public ?array $scope = [];
 }

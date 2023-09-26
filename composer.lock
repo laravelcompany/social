@@ -11393,7 +11393,6 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "jonathantorres/medium-sdk": 20,
-        "league/oauth2-facebook": 20,
         "league/oauth2-github": 20,
         "league/oauth2-google": 20,
         "league/oauth2-instagram": 20,

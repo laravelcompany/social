@@ -12,19 +12,19 @@ use League\OAuth2\Client\Provider\LinkedIn;
 use Smolblog\OAuth2\Client\Provider\Twitter;
 use RuntimeException;
 
+/**
+ * @todo Refactor this class to implement multiple interfaces
+ */
 class SocialRepository
 {
-
     private const ACCOUNT_TWITTER = 'twitter';
     private const ACCOUNT_LINKEDIN = 'linkedin';
     private const ACCOUNT_FACEBOOK = 'facebook';
-
     private array $providerClasses = [
         self::ACCOUNT_TWITTER => Twitter::class,
-        self::ACCOUNT_LINKEDIN => LinkedIn::class
+        self::ACCOUNT_LINKEDIN => LinkedIn::class,
+        self::ACCOUNT_FACEBOOK => Facebook::class
     ];
-
-
     public final function createAccount(string $name, int $userId): SocialAccount
     {
         return SocialAccount::create([
@@ -50,6 +50,7 @@ class SocialRepository
         $account->delete();
     }
     /**
+     * @todo rewrite this to add the scopes
      * @throws \Exception
      */
     public final function getSocialService(int $user_id, string $provider): SocialOauthService
@@ -57,20 +58,18 @@ class SocialRepository
         $data = SocialAccountConfiguration::where('social_account_id',$user_id)
             ->where('type',$provider)->first();
 
-
         $credentials = ConfigurationDTO::from($data->configuration);
 
         $providerClass = $this->providerClasses[$data->type] ?? null;
 
-        if (!$providerClass) {
-            throw new RuntimeException("This type of service is not supported");
+        if (is_null($providerClass)) {
+            throw new RuntimeException("This type of service is not supported or it is not implemented yet");
         }
 
         $provider = new $providerClass($credentials->toArray());
 
         return new SocialOauthService($provider);
     }
-
     /**
      * @throws \Exception
      */
@@ -103,9 +102,14 @@ class SocialRepository
     /**
      * @throws \Exception
      */
-    public final function updateAccountConfiguration(int $account, string $clientId, string $clientSecret, string $redirectUri): SocialAccountConfiguration
+    public final function updateAccountConfiguration(
+        int $account,
+        string $clientId,
+        string $clientSecret,
+        string $redirectUri,
+        array $scopes
+    ): SocialAccountConfiguration
     {
-
         $data = SocialAccountConfiguration::find($account);
 
         if (!$data) {
@@ -116,7 +120,7 @@ class SocialRepository
             'clientId' => $clientId,
             'clientSecret' => $clientSecret,
             'redirectUri' => $redirectUri,
-            //@todo implement scopes
+            'scopes' => $scopes
         ]);
 
         $data->configuration = $configurationDTO->toJson();
@@ -136,5 +140,20 @@ class SocialRepository
         }
 
         return ConfigurationDTO::from($data->configuration);
+    }
+
+
+    public final function setSession(int $account, string $provider): self
+    {
+        session()->put('account', $account);
+        session()->put('provider', $provider);
+        return $this;
+    }
+
+    public final function destroySession(): self
+    {
+        session()->remove('account');
+        session()->remove('provider');
+        return $this;
     }
 }

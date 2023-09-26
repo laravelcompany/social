@@ -26,16 +26,15 @@ class SocialLoginController extends \Illuminate\Routing\Controller
     {
         $service = $this->socialRepository->getSocialService($user_id, $provider);
 
-        //set session
-        session()->put('account', $user_id);
-        session()->put('provider', $provider);
+        //set a temp session to get the account
+        $this->socialRepository->setSession($user_id, $provider);
 
         if (!$request->has('code')) {
             $authUrl = $service->getAuthUrl([]);
             return redirect($authUrl);
         }
-
         abort(500, "The social code not found");
+
     }
 
 
@@ -63,8 +62,7 @@ class SocialLoginController extends \Illuminate\Routing\Controller
             $credentials->save();
 
             //remove the previous account
-            session()->remove('account');
-            session()->remove('provider');
+            $this->socialRepository->destroyAccount($account);
 
             return redirect()->route('social.index')
                 ->with('success', 'Account connected successfully');

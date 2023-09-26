@@ -17,7 +17,6 @@ class SocialAccountConfiguration extends Model
     protected $table = "social_accounts_configuration";
 
     protected $fillable= [
-
         'social_account_id',
         'type',
         'configuration',
@@ -29,8 +28,7 @@ class SocialAccountConfiguration extends Model
         return $this->belongsTo(SocialAccount::class);
     }
 
-
-    public final function getConfigurationAttribute($value):object
+    public final function getConfigurationAttribute(string $value):object
     {
         return json_decode($value);
     }

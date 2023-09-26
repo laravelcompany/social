@@ -45,11 +45,14 @@ class SocialCredentialsController extends \Illuminate\Routing\Controller
 
 
     /**
+     * @method update
+     * @param UpdateSocialAccountConfiguration $request
+     * @return RedirectResponse
      * @throws \Exception
      */
     public final function update(UpdateSocialAccountConfiguration $request): RedirectResponse
     {
-        dd($request->all());
+
         $this->socialRepository->updateAccountConfiguration(
             $request->input('id'),
             $request->input('clientId'),
@@ -58,7 +61,7 @@ class SocialCredentialsController extends \Illuminate\Routing\Controller
             explode(',', $request->input('scopes'))
         );
 
-        return redirect()->route('social.index');
+        return redirect()->route('social.index')->with('success', 'Credentials updated successfully');
     }
 
 }
