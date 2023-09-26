@@ -9,9 +9,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
+
 
 class SocialCredentialsController extends \Illuminate\Routing\Controller
 {
@@ -21,7 +19,6 @@ class SocialCredentialsController extends \Illuminate\Routing\Controller
     {
         $this->socialRepository = new SocialRepository();
     }
-
 
     public final function create(int $account): View|Application
     {
@@ -37,6 +34,7 @@ class SocialCredentialsController extends \Illuminate\Routing\Controller
     public final function edit(int $credentialsID): View|Application
     {
         $credentials = $this->socialRepository->getAccountConfiguration($credentialsID);
+
         $socialAccountConfiguration = SocialAccountConfiguration::find($credentialsID);
 
         return view('social::credentials.edit', [
@@ -46,11 +44,19 @@ class SocialCredentialsController extends \Illuminate\Routing\Controller
     }
 
 
+    /**
+     * @throws \Exception
+     */
     public final function update(UpdateSocialAccountConfiguration $request): RedirectResponse
     {
+        $this->socialRepository->updateAccountConfiguration(
+            $request->input('id'),
+            $request->input('clientId'),
+            $request->input('clientSecret'),
+            $request->input('redirectUri')
+        );
 
-
-        dd($request->all());
+        return redirect()->route('social.index');
     }
 
 }

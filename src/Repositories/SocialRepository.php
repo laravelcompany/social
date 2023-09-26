@@ -100,13 +100,39 @@ class SocialRepository
         $data->save();
     }
 
+    /**
+     * @throws \Exception
+     */
+    public final function updateAccountConfiguration(int $account, string $clientId, string $clientSecret, string $redirectUri): SocialAccountConfiguration
+    {
 
+        $data = SocialAccountConfiguration::find($account);
+
+        if (!$data) {
+            throw new \Exception("Account with id {$account} not found in the database");
+        }
+
+        $configurationDTO = ConfigurationDTO::from([
+            'clientId' => $clientId,
+            'clientSecret' => $clientSecret,
+            'redirectUri' => $redirectUri,
+            //@todo implement scopes
+        ]);
+
+        $data->configuration = $configurationDTO->toJson();
+        $data->save();
+        return $data;
+    }
+
+    /**
+     * @throws \RuntimeException
+     */
     public final function getAccountConfiguration(int $account): ConfigurationDTO
     {
         $data = SocialAccountConfiguration::find($account);
 
         if (!$data) {
-            throw new \Exception("Account with id {$account} not found in the database");
+            throw new \RuntimeException("Account with id {$account} not found in the database");
         }
 
         return ConfigurationDTO::from($data->configuration);

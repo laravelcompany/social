@@ -24,7 +24,7 @@
 
                 <div class="form-group">
                     <label for="exampleInputEmail1">Client Id</label>
-                    <input type="text" class="form-control" id="exampleInputEmail1" name="clientID"
+                    <input type="text" class="form-control" id="exampleInputEmail1" name="clientId"
                            value="{{ $credentials->clientId }}"
                            placeholder="Enter Client ID">
                 </div>
@@ -36,7 +36,7 @@
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Client Redirect Url</label>
-                    <input type="text" class="form-control" id="exampleInputEmail1" name="redirect_uri"
+                    <input type="text" class="form-control" id="exampleInputEmail1" name="redirectUri"
                            value="{{ $credentials->redirectUri }}"
                            placeholder="Enter Client ID">
                 </div>
