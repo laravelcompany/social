@@ -6,6 +6,7 @@ use Cornatul\Social\Http\GoogleController;
 use Cornatul\Social\Http\LinkedInController;
 use Cornatul\Social\Http\MediumController;
 use Cornatul\Social\Http\SocialController;
+use Cornatul\Social\Http\SocialLoginController;
 use Cornatul\Social\Http\TumblrController;
 use Cornatul\Social\Http\TwitterController;
 
@@ -14,10 +15,13 @@ Route::group(['middleware' => ['web','auth'],'prefix' => 'social', 'as' => 'soci
     Route::get('/', [SocialController::class, 'index'])->name('index');
     Route::get('/view/{id}', [SocialController::class, 'view'])->name('view');
     Route::get('/edit/{id}', [SocialController::class, 'edit'])->name('edit');
+    Route::post('/update/{id}', [SocialController::class, 'update'])->name('update');
     Route::get('/create', [SocialController::class, 'create'])->name('create');
     Route::post('/save', [SocialController::class, 'save'])->name('save');
     Route::get('/destroy/{id}', [SocialController::class, 'destroy'])->name('destroy');
 
+    //custom login
+    Route::get('/login/{account}/{provider}', [SocialLoginController::class, 'login'])->name('login');
 
     //LinkedIN
     //@todo maybe remove this as is not needed anymore

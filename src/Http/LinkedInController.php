@@ -40,7 +40,7 @@ class LinkedInController extends Controller
         session()->put('account', $account);
 
         if (!$request->has('code')) {
-            $authUrl = $service->getAuthUrl();
+            $authUrl = $service->getAuthUrl([]);
             return redirect($authUrl);
         }
 

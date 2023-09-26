@@ -1,4 +1,4 @@
-@extends('marketing::layouts.app')
+ @extends('marketing::layouts.app')
 
 @section('title', __('Social Sharing'))
 
@@ -30,10 +30,14 @@
                         <td>
                             {{  $config->type }}
                         </td>
-                        <td>
+                        <td class="text-right">
                             <a class="btn btn-info {{ request()->routeIs('social.linkedin') ? 'active'  : '' }}"
                                href="{{ route('social.linkedin.login', ['account' => $account->id]) }}">
-                                {{ __('Login LinkedIn') }}
+                                {{ __('Login') }}
+                            </a>
+                            <a class="btn btn-info {{ request()->routeIs('social.linkedin') ? 'active'  : '' }}"
+                               href="{{ route('social.linkedin.login', ['account' => $account->id]) }}">
+                                {{ __('Edit Credentials') }}
                             </a>
                         </td>
                     </tr>

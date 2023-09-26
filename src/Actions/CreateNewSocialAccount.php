@@ -10,11 +10,10 @@ final class CreateNewSocialAccount extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required',
-            'user_id' => 'required',
+            'name' => 'required|string',
+            'user_id' => 'required|int',
         ];
     }
-
     public function authorize(): bool
     {
         return true;

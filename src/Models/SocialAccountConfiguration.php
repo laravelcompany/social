@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * * @param string $token
  * * @method static create(array $data)
  * * @method static find (int $id)
+ * * @method static where (string $column, string $value)
  * * @method static inRandomOrder()
  */
 class SocialAccountConfiguration extends Model

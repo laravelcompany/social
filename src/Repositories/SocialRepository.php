@@ -19,10 +19,10 @@ class SocialRepository
     private const ACCOUNT_LINKEDIN = 'linkedin';
     private const ACCOUNT_FACEBOOK = 'facebook';
 
-    private $providerClasses = [
+    private array $providerClasses = [
         self::ACCOUNT_TWITTER => Twitter::class,
         self::ACCOUNT_LINKEDIN => LinkedIn::class,
-        // Add other account types here if needed
+        self::ACCOUNT_FACEBOOK => LinkedIn::class,
     ];
 
 
@@ -33,15 +33,10 @@ class SocialRepository
             'user_id' => $userId,
         ]);
     }
-
-
     public final function getAccount(int $id): SocialAccount
     {
-        return SocialAccount::with('configuration')->find($id);
+        return SocialAccount::with('configuration')->find($id)->first();
     }
-
-    //UPDATE
-
     public final function updateAccount(int $id, string $name, int $userId): SocialAccount
     {
         $account = SocialAccount::find($id);
@@ -50,20 +45,19 @@ class SocialRepository
         $account->save();
         return $account;
     }
-
-    //destroy account
     public final function destroyAccount(int $id): void
     {
         $account = SocialAccount::find($id);
         $account->delete();
     }
-
     /**
      * @throws \Exception
      */
-    public final function getSocialService(int $account): SocialOauthService
+    public final function getSocialService(int $user_id, string $provider): SocialOauthService
     {
-        $data = SocialAccountConfiguration::find($account);
+        $data = SocialAccountConfiguration::where('social_account_id',$user_id)
+            ->where('type',$provider)->first();
+
 
         $credentials = ConfigurationDTO::from($data->configuration);
 
@@ -92,13 +86,15 @@ class SocialRepository
         return $account;
     }
 
-
+    /**
+     * @throws \Exception
+     */
     public final function saveAccountInformation(ConfigurationDTO $configurationDTO, int $account): void
     {
         $data = SocialAccountConfiguration::find($account);
 
         if (!$data) {
-            throw new QueryException("Account with id {$account} not found in the database");
+            throw new \Exception("Account with id {$account} not found in the database");
         }
 
         $data->information = $configurationDTO->toJson();
