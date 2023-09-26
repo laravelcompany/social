@@ -18,7 +18,7 @@
                         {{ __('ID') }}
                     </th>
                     <th>{{ __('Type') }}</th>
-                    <th>{{ __('Actions') }}</th>
+                    <th class="text-right">{{ __('Actions') }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -31,15 +31,16 @@
                             {{  $config->type }}
                         </td>
                         <td class="text-right">
-                            <a class="btn btn-info {{ request()->routeIs('social.linkedin') ? 'active'  : '' }}"
-                               href="{{ route('social.linkedin.login', ['account' => $account->id]) }}">
-                                {{ __('Login') }}
+                            <a class="btn btn-info"
+                               href="{{ route('social.login', ['account' => $config->social_account_id, 'provider' => $config->type]) }}">
+                                {{ __('Login') }} {{ $config->type }}
                             </a>
-                            <a class="btn btn-info {{ request()->routeIs('social.linkedin') ? 'active'  : '' }}"
-                               href="{{ route('social.linkedin.login', ['account' => $account->id]) }}">
-                                {{ __('Edit Credentials') }}
+                            <a class="btn btn-danger"
+                               href="{{ route('social.credentials.edit', ['configurationID' => $config->id]) }}">
+                                {{ __('Edit') }} {{ $config->type }}
                             </a>
                         </td>
+
                     </tr>
                 @endforeach
                 </tbody>

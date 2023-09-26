@@ -9,7 +9,7 @@ use Cornatul\Social\Models\SocialAccountConfiguration;
 use Cornatul\Social\Service\SocialOauthService;
 use Illuminate\Database\QueryException;
 use League\OAuth2\Client\Provider\LinkedIn;
-use League\OAuth2\Client\Provider\Twitter;
+use Smolblog\OAuth2\Client\Provider\Twitter;
 use RuntimeException;
 
 class SocialRepository
@@ -21,8 +21,7 @@ class SocialRepository
 
     private array $providerClasses = [
         self::ACCOUNT_TWITTER => Twitter::class,
-        self::ACCOUNT_LINKEDIN => LinkedIn::class,
-        self::ACCOUNT_FACEBOOK => LinkedIn::class,
+        self::ACCOUNT_LINKEDIN => LinkedIn::class
     ];
 
 
@@ -99,5 +98,17 @@ class SocialRepository
 
         $data->information = $configurationDTO->toJson();
         $data->save();
+    }
+
+
+    public final function getAccountConfiguration(int $account): ConfigurationDTO
+    {
+        $data = SocialAccountConfiguration::find($account);
+
+        if (!$data) {
+            throw new \Exception("Account with id {$account} not found in the database");
+        }
+
+        return ConfigurationDTO::from($data->configuration);
     }
 }
