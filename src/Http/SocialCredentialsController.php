@@ -49,11 +49,13 @@ class SocialCredentialsController extends \Illuminate\Routing\Controller
      */
     public final function update(UpdateSocialAccountConfiguration $request): RedirectResponse
     {
+        dd($request->all());
         $this->socialRepository->updateAccountConfiguration(
             $request->input('id'),
             $request->input('clientId'),
             $request->input('clientSecret'),
-            $request->input('redirectUri')
+            $request->input('redirectUri'),
+            explode(',', $request->input('scopes'))
         );
 
         return redirect()->route('social.index');

@@ -40,6 +40,12 @@
                            value="{{ $credentials->redirectUri }}"
                            placeholder="Enter Client ID">
                 </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Scopes</label>
+                    <input type="text" class="form-control" id="exampleInputEmail1" name="scopes"
+                           value="{{ implode(',' , $credentials->scopes) }}"
+                           placeholder="Enter Client ID">
+                </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>
