@@ -4,7 +4,7 @@ on:
     push:
         branches:
             - "main"
-            - "development"
+            - "dev"
 
 jobs:
     build-test:
@@ -21,3 +21,5 @@ jobs:
                   bootstrap: vendor/autoload.php
                   configuration: phpunit.xml
                   args: --coverage-text
+            - name: action-phpcs
+              uses: thenabeel/action-phpcs@v8

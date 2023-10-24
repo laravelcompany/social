@@ -19,9 +19,10 @@ class SocialOauthService
 
     public function getAuthUrl(array $scopes)
     {
+        //todo add scopes here using the id
         $options = [
             'state' => bin2hex(random_bytes(16)),
-            'scope' => 'r_liteprofile w_member_social',
+            'scope' => $scopes,
         ];
 
         return $this->provider->getAuthorizationUrl($options);
@@ -34,6 +35,7 @@ class SocialOauthService
     {
         return $this->provider->getAccessToken('authorization_code', [
             'code' => $code,
+            'code_verifier' => session()->get('oauth2verifier'),
         ]);
     }
 

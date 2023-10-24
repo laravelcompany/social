@@ -23,7 +23,6 @@ class SocialRepository implements SocialContract
     private const ACCOUNT_TWITTER = 'twitter';
     private const ACCOUNT_LINKEDIN = 'linkedin';
     private const ACCOUNT_FACEBOOK = 'facebook';
-
     private const ACCOUNT_GOOGLE = 'google';
 
     private array $providerClasses = [
@@ -68,14 +67,15 @@ class SocialRepository implements SocialContract
     /**
      * @throws \Exception
      */
-    public final function getSocialService(int $user_id, string $provider): SocialOauthService
+    public final function getSocialService(int $social_account_id, string $provider): SocialOauthService
     {
-        $data = SocialAccountConfiguration::where('social_account_id',$user_id)
+        $data = SocialAccountConfiguration::where('social_account_id',$social_account_id)
             ->where('type',$provider)->first();
 
         $credentials = ConfigurationDTO::from($data);
 
         $providerClass = $this->providerClasses[$data->type] ?? null;
+
 
         if (is_null($providerClass)) {
             throw new RuntimeException("This type of service is not supported or it is not implemented yet");
@@ -83,17 +83,22 @@ class SocialRepository implements SocialContract
 
         $provider = new $providerClass((array) $credentials->configuration);
 
+        if($data->type === self::ACCOUNT_TWITTER){
+            $provider->setPkce(true);
+            session()->put('oauth2state', $provider->getState() ?? "");
+            session()->put('oauth2verifier', $provider->getPkceVerifier() ?? "");
+        }
+
+
+
         return new SocialOauthService($provider);
     }
 
     /**
      * @throws \Exception
      */
-    public final function updateAccountConfiguration(
-        UpdateSocialAccountConfiguration $request,
-    ): SocialAccountConfiguration
+    public final function updateAccountConfiguration(UpdateSocialAccountConfiguration $request,): SocialAccountConfiguration
     {
-
         $data = SocialAccountConfiguration::where('social_account_id',$request->input('id'))
             ->where('type',$request->input('type'))->first();
 

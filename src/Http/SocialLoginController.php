@@ -29,8 +29,12 @@ class SocialLoginController extends \Illuminate\Routing\Controller
         //set a temp session to get the account
         $this->socialRepository->setSession($account, $provider);
 
+        $scopes =   $data = SocialAccountConfiguration::where('social_account_id',$account)
+            ->where('type',$provider)->first();
+
+
         if (!$request->has('code')) {
-            $authUrl = $service->getAuthUrl([]);
+            $authUrl = $service->getAuthUrl( $scopes->configuration->scopes );
             return redirect($authUrl);
         }
         abort(500, "The social code not found");
@@ -48,7 +52,11 @@ class SocialLoginController extends \Illuminate\Routing\Controller
             $provider = session()->get('provider');
 
             $provider = $this->socialRepository->getSocialService($account, $provider);
+
+
             $accessToken = $provider->getAccessToken($request->get('code'));
+
+            dd($accessToken);
 
             //@todo inspect this to move to repository
             $user = $provider->getProfile($accessToken);
