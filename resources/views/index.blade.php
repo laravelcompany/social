@@ -42,6 +42,7 @@
                         </td>
 
                         <td class="text-right">
+                            <a href="{{ route('social.share.create', $account->id) }}" class="btn btn-info btn-sm">{{ __('Share') }}</a>
                             <a href="{{ route('social.edit', $account->id) }}" class="btn btn-primary btn-sm">{{ __('Edit') }}</a>
                             <a href="{{ route('social.destroy', $account->id) }}" class="btn btn-danger btn-sm">{{ __('Delete') }}</a>
                             <a href="{{ route('social.view', $account->id) }}" class="btn btn-success btn-sm">{{ __('View') }}</a>

@@ -36,6 +36,14 @@ class SocialRepository
     {
         return SocialAccount::with('configuration')->find($id)->first();
     }
+
+    /**
+     * @todo refactor this to use the configuration dto
+     * @param int $id
+     * @param string $name
+     * @param int $userId
+     * @return SocialAccount
+     */
     public final function updateAccount(int $id, string $name, int $userId): SocialAccount
     {
         $account = SocialAccount::find($id);
@@ -104,13 +112,15 @@ class SocialRepository
      */
     public final function updateAccountConfiguration(
         int $account,
+        string $type,
         string $clientId,
         string $clientSecret,
         string $redirectUri,
         array $scopes
     ): SocialAccountConfiguration
     {
-        $data = SocialAccountConfiguration::find($account);
+        $data = SocialAccountConfiguration::where('social_account_id',$account)
+            ->where('type',$type)->first();
 
         if (!$data) {
             throw new \Exception("Account with id {$account} not found in the database");
@@ -155,5 +165,46 @@ class SocialRepository
         session()->remove('account');
         session()->remove('provider');
         return $this;
+    }
+
+    public final function getScopes(int $account, string $provider):array
+    {
+        $data = SocialAccountConfiguration::where('social_account_id',$account)
+            ->where('type',$provider)->first();
+
+        $configuration = ConfigurationDTO::from($data->configuration);
+
+        return $configuration->scopes;
+    }
+
+    /**
+     * @todo refactor this to use the configuration dto
+     * @throws \Exception
+     */
+    public final function createAccountConfiguration(
+        int $account,
+        string $type,
+        string $clientId,
+        string $clientSecret,
+        string $redirectUri,
+        array $scopes
+    ): SocialAccountConfiguration
+    {
+
+        try {
+
+            return SocialAccountConfiguration::create([
+                'social_account_id' => $account,
+                'type' => $type,
+                'configuration' => ConfigurationDTO::from([
+                    'clientId' => $clientId,
+                    'clientSecret' => $clientSecret,
+                    'redirectUri' => $redirectUri,
+                    'scopes' => $scopes
+                ])->toJson()
+            ]);
+        } catch (QueryException $exception) {
+            throw new \Exception($exception->getMessage());
+        }
     }
 }

@@ -7,7 +7,18 @@
 @endsection
 
 @section('content')
+    <!-- Create !-->
+    <div class="d-flex flex-column flex-md-row justify-content-between mb-3">
+        <div>
 
+        </div>
+        <div>
+            <a class="btn btn-primary btn-md btn-flat" href="{{ route('social.credentials.create', ['account' => $account->id]) }}">
+                <i class="fa fa-plus mr-1"></i> Create Connection
+            </a>
+        </div>
+    </div>
+    <!-- Cards !-->
     <!-- Cards !-->
     <div class="card">
         <div class="card-table table-responsive">
@@ -18,6 +29,7 @@
                         {{ __('ID') }}
                     </th>
                     <th>{{ __('Type') }}</th>
+                    <th>{{ __('Information') }}</th>
                     <th class="text-right">{{ __('Actions') }}</th>
                 </tr>
                 </thead>
@@ -29,6 +41,9 @@
                         </td>
                         <td>
                             {{  $config->type }}
+                        </td>
+                        <td>
+                            {{  $config->information }}
                         </td>
                         <td class="text-right">
                             <a class="btn btn-info"

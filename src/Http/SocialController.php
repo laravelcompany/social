@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Cornatul\Social\Http;
 use Cornatul\Social\Actions\CreateNewSocialAccount;
+use Cornatul\Social\Contracts\SocialContract;
 use Cornatul\Social\Models\SocialAccount;
 use Cornatul\Social\Repositories\SocialRepository;
 use Illuminate\Http\RedirectResponse;
@@ -19,6 +20,14 @@ use Illuminate\View\View;
  */
 class SocialController extends Controller
 {
+
+
+    public final function __construct(
+    )
+    {
+        $this->middleware('auth');
+    }
+
     public final function index(): View
     {
         $accounts = SocialAccount::paginate();

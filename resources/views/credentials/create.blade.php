@@ -3,7 +3,7 @@
 @section('title', __('Configuration Sharing'))
 
 @section('heading')
-    {{ __('Social Accounts') }}
+    {{ __('Create Connection for account') }}
 @endsection
 
 @section('content')
@@ -12,15 +12,24 @@
     <div class="card">
 
         <div class="card-header">
-            <h3 class="card-title">{{ __('Edit Account Credentials') }} {{ $socialAccountConfiguration->type }}</h3>
+            <h3 class="card-title">{{ __('Create Connection Credentials') }}</h3>
         </div>
 
 
         <div class="card-body">
-            <form method="post" action="{{ route('social.credentials.update') }}">
+            <form method="post" action="{{ route('social.credentials.save') }}">
                 @csrf
 
-                <input type="hidden" name="id" value="{{ $socialAccountConfiguration->id }}">
+                <input type="hidden" name="account" value="{{ $account }}">
+
+                <div class="form-group">
+                    <label for="exampleInputEmail1">
+                        {{ __('Client id') }}
+                    </label>
+                    <input type="text" class="form-control" id="exampleInputEmail1" name="clientId"
+                           placeholder=" {{ __('Client id') }}">
+                </div>
+
                 <div class="form-group">
                     <label for="exampleInputEmail1">
                         {{ __('Type') }}
@@ -32,30 +41,33 @@
                         <option value="instagram">Instagram</option>
                     </select>
                 </div>
+
+
+
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Client Id</label>
-                    <input type="text" class="form-control" id="exampleInputEmail1" name="clientId"
-                           value="{{ $credentials->clientId }}"
-                           placeholder="Enter Client ID">
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Client Secret</label>
+                    <label for="exampleInputEmail1">
+                        {{ __('Client Secret') }}
+                    </label>
                     <input type="text" class="form-control" id="exampleInputEmail1" name="clientSecret"
-                           value="{{ $credentials->clientSecret }}"
-                           placeholder="Enter Client ID">
+                           placeholder="{{ __('Client Secret') }}">
                 </div>
+
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Client Redirect Url</label>
+                    <label for="exampleInputEmail1">
+                        {{ __('Redirect Uri') }}
+                    </label>
                     <input type="text" class="form-control" id="exampleInputEmail1" name="redirectUri"
-                           value="{{ $credentials->redirectUri }}"
-                           placeholder="Enter Client ID">
+                           placeholder=" {{ __('Redirect Uri') }}">
                 </div>
+
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Scopes</label>
+                    <label for="exampleInputEmail1">
+                        {{ __('Scopes') }}
+                    </label>
                     <input type="text" class="form-control" id="exampleInputEmail1" name="scopes"
-                           value="{{ implode(',' , $credentials->scopes) }}"
-                           placeholder="Enter Client ID">
+                           placeholder=" {{ __('Scopes') }}">
                 </div>
+
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>

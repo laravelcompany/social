@@ -29,6 +29,10 @@ Route::group(['middleware' => ['web','auth'],'prefix' => 'social', 'as' => 'soci
     Route::get('/credentials/create/{account}', [SocialCredentialsController::class, 'create'])->name('credentials.create');
     Route::get('/credentials/edit/{configurationID}', [SocialCredentialsController::class, 'edit'])->name('credentials.edit');
     Route::post('/credentials/update', [SocialCredentialsController::class, 'update'])->name('credentials.update');
+    Route::post('/credentials/create/', [SocialCredentialsController::class, 'save'])->name('credentials.save');
 
 
+    //Share
+    Route::get('/share/{account}', [\Cornatul\Social\Http\ShareController::class, 'share'])->name('share.create');
+    Route::post('/share/', [\Cornatul\Social\Http\ShareController::class, 'send'])->name('share.send');
 });

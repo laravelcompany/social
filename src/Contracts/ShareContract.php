@@ -2,10 +2,10 @@
 
 namespace Cornatul\Social\Contracts;
 
-use Cornatul\Social\Objects\Message;
+use Cornatul\Social\DTO\MessageDTO;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 
 interface ShareContract
 {
-    public function shareOnWall(AccessTokenInterface $accessToken, Message $message): void;
+    public function share(AccessTokenInterface $accessToken, MessageDTO $message): void;
 }

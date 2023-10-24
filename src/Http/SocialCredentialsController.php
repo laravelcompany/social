@@ -2,28 +2,30 @@
 
 namespace Cornatul\Social\Http;
 
+use Cornatul\Social\Actions\CreateSocialAccountConfiguration;
 use Cornatul\Social\Actions\UpdateSocialAccountConfiguration;
 use Cornatul\Social\Models\SocialAccountConfiguration;
 use Cornatul\Social\Repositories\SocialRepository;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\View\View;
 
 
-class SocialCredentialsController extends \Illuminate\Routing\Controller
+class SocialCredentialsController extends Controller
 {
     private SocialRepository $socialRepository;
 
-    public function __construct()
+    public function __construct(SocialRepository $socialRepository)
     {
-        $this->socialRepository = new SocialRepository();
+        $this->socialRepository = $socialRepository;
     }
 
     public final function create(int $account): View|Application
     {
         return view('social::credentials.create', [
-            'account' => $account
+            'account' => $account,
         ]);
     }
 
@@ -55,6 +57,7 @@ class SocialCredentialsController extends \Illuminate\Routing\Controller
 
         $this->socialRepository->updateAccountConfiguration(
             $request->input('id'),
+            $request->input('type'),
             $request->input('clientId'),
             $request->input('clientSecret'),
             $request->input('redirectUri'),
@@ -62,6 +65,28 @@ class SocialCredentialsController extends \Illuminate\Routing\Controller
         );
 
         return redirect()->route('social.index')->with('success', 'Credentials updated successfully');
+    }
+
+
+    /**
+     * @method save
+     * @param UpdateSocialAccountConfiguration $request
+     * @return RedirectResponse
+     * @throws \Exception
+     */
+    public final function save(CreateSocialAccountConfiguration $request): RedirectResponse
+    {
+
+        $this->socialRepository->createAccountConfiguration(
+            $request->input('account'),
+            $request->input('type'),
+            $request->input('clientId'),
+            $request->input('clientSecret'),
+            $request->input('redirectUri'),
+            explode(',', $request->input('scopes'))
+        );
+
+        return redirect()->route('social.index')->with('success', 'Credentials created successfully');
     }
 
 }

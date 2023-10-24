@@ -12,10 +12,6 @@ use Spatie\LaravelData\Data;
  * @method static self fromString(string $string)
  * @method static self fromObject(object $object)
  */
-class ConfigurationDTO extends Data
+class MessageDTO extends Data
 {
-    public ?string $clientId;
-    public ?string $clientSecret;
-    public ?string $redirectUri;
-    public ?array $scopes = [];
 }

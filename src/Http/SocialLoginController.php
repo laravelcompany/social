@@ -14,22 +14,26 @@ class SocialLoginController extends \Illuminate\Routing\Controller
 {
     private SocialRepository $socialRepository;
 
-    public function __construct()
+    public function __construct(SocialRepository $socialRepository)
     {
-        $this->socialRepository = new SocialRepository();
+        $this->socialRepository = $socialRepository;
     }
 
     /**
      * @throws \Exception
      */
-    public final function login(int $user_id, string $provider, Request $request): string
+    public final function login(int $account, string $provider, Request $request): string
     {
-        $service = $this->socialRepository->getSocialService($user_id, $provider);
+        $service = $this->socialRepository->getSocialService($account, $provider);
+
+        $scopes = $this->socialRepository->getScopes($account, $provider);
+
 
         //set a temp session to get the account
-        $this->socialRepository->setSession($user_id, $provider);
+        $this->socialRepository->setSession($account, $provider);
 
         if (!$request->has('code')) {
+            //@todo here set scopes from the configuration dto
             $authUrl = $service->getAuthUrl([]);
             return redirect($authUrl);
         }
@@ -49,20 +53,26 @@ class SocialLoginController extends \Illuminate\Routing\Controller
             $provider = $this->socialRepository->getSocialService($account, $provider);
             $accessToken = $provider->getAccessToken($request->get('code'));
 
+            //@todo inspect this to move to repository
             $user = $provider->getProfile($accessToken);
+            
 
-            $credentials = SocialAccountConfiguration::find($account);
-
+            //
+            $credentials = SocialAccountConfiguration::where('social_account_id', $account)
+                ->where('type',  session()->get('provider'))
+                ->first();
 
             $credentials->information = json_encode([
                 'access_token' => $accessToken->getToken(),
-                'user' => $user
+                'user' => $user,
+                'refresh_token' => $accessToken->getRefreshToken(),
+                'expires' => $accessToken->getExpires(),
             ]);
 
             $credentials->save();
 
             //remove the previous account
-            $this->socialRepository->destroyAccount($account);
+            $this->socialRepository->destroySession();
 
             return redirect()->route('social.index')
                 ->with('success', 'Account connected successfully');
@@ -74,5 +84,8 @@ class SocialLoginController extends \Illuminate\Routing\Controller
                 ->with('error', $e->getMessage());
         }
     }
+
+
+
 
 }
