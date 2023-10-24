@@ -23,12 +23,18 @@ class SocialAccountConfiguration extends Model
         'information'
     ];
 
+
     public final function account():BelongsTo
     {
         return $this->belongsTo(SocialAccount::class);
     }
 
-    public final function getConfigurationAttribute(string $value):object
+    public final function getConfigurationAttribute(string | null $value):object|null
+    {
+        return json_decode($value);
+    }
+
+    public final function getInformationAttribute(string | null $value):object|null
     {
         return json_decode($value);
     }

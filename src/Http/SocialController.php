@@ -20,11 +20,11 @@ use Illuminate\View\View;
  */
 class SocialController extends Controller
 {
+    protected   SocialRepository $socialRepository;
 
-
-    public final function __construct(
-    )
+    public final function __construct(SocialRepository $socialRepository)
     {
+        $this->socialRepository = $socialRepository;
         $this->middleware('auth');
     }
 
@@ -36,9 +36,10 @@ class SocialController extends Controller
         );
     }
 
-    public final function view(int $id): View
+    public final function view(int $account): View
     {
-        $account = SocialAccount::with('configuration')->find($id);
+        $account = $this->socialRepository->getAccount($account);
+
         return view('social::view',
         	compact('account')
         );
@@ -46,8 +47,7 @@ class SocialController extends Controller
 
     public final function create(): View
     {
-        return view('social::create',
-        );
+        return view('social::create');
     }
 
     public final function save(CreateNewSocialAccount $request, SocialRepository $repository): RedirectResponse

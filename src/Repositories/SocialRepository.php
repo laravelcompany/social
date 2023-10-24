@@ -8,6 +8,8 @@ use Cornatul\Social\Models\SocialAccount;
 use Cornatul\Social\Models\SocialAccountConfiguration;
 use Cornatul\Social\Service\SocialOauthService;
 use Illuminate\Database\QueryException;
+use League\OAuth2\Client\Provider\Facebook;
+use League\OAuth2\Client\Provider\Google;
 use League\OAuth2\Client\Provider\LinkedIn;
 use Smolblog\OAuth2\Client\Provider\Twitter;
 use RuntimeException;
@@ -15,16 +17,21 @@ use RuntimeException;
 /**
  * @todo Refactor this class to implement multiple interfaces
  */
-class SocialRepository
+class SocialRepository implements SocialContract
 {
     private const ACCOUNT_TWITTER = 'twitter';
     private const ACCOUNT_LINKEDIN = 'linkedin';
     private const ACCOUNT_FACEBOOK = 'facebook';
+
+    private const ACCOUNT_GOOGLE = 'google';
+
     private array $providerClasses = [
         self::ACCOUNT_TWITTER => Twitter::class,
         self::ACCOUNT_LINKEDIN => LinkedIn::class,
-        self::ACCOUNT_FACEBOOK => Facebook::class
+        self::ACCOUNT_FACEBOOK => Facebook::class,
+        self::ACCOUNT_GOOGLE => Google::class,
     ];
+
     public final function createAccount(string $name, int $userId): SocialAccount
     {
         return SocialAccount::create([
@@ -34,7 +41,7 @@ class SocialRepository
     }
     public final function getAccount(int $id): SocialAccount
     {
-        return SocialAccount::with('configuration')->find($id)->first();
+        return SocialAccount::with(['configuration'])->find($id)->first();
     }
 
     /**
@@ -58,7 +65,6 @@ class SocialRepository
         $account->delete();
     }
     /**
-     * @todo rewrite this to add the scopes
      * @throws \Exception
      */
     public final function getSocialService(int $user_id, string $provider): SocialOauthService
@@ -66,7 +72,7 @@ class SocialRepository
         $data = SocialAccountConfiguration::where('social_account_id',$user_id)
             ->where('type',$provider)->first();
 
-        $credentials = ConfigurationDTO::from($data->configuration);
+        $credentials = ConfigurationDTO::from($data);
 
         $providerClass = $this->providerClasses[$data->type] ?? null;
 
@@ -74,37 +80,9 @@ class SocialRepository
             throw new RuntimeException("This type of service is not supported or it is not implemented yet");
         }
 
-        $provider = new $providerClass($credentials->toArray());
+        $provider = new $providerClass((array) $credentials->configuration);
 
         return new SocialOauthService($provider);
-    }
-    /**
-     * @throws \Exception
-     */
-    public final function getAccountFromSession(): int
-    {
-        $account = session()->get('account');
-
-        if (!$account) {
-            throw new \Exception("Account not found in session");
-        }
-
-        return $account;
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public final function saveAccountInformation(ConfigurationDTO $configurationDTO, int $account): void
-    {
-        $data = SocialAccountConfiguration::find($account);
-
-        if (!$data) {
-            throw new \Exception("Account with id {$account} not found in the database");
-        }
-
-        $data->information = $configurationDTO->toJson();
-        $data->save();
     }
 
     /**
@@ -126,14 +104,14 @@ class SocialRepository
             throw new \Exception("Account with id {$account} not found in the database");
         }
 
-        $configurationDTO = ConfigurationDTO::from([
+        $configurationDTO = json_encode([
             'clientId' => $clientId,
             'clientSecret' => $clientSecret,
             'redirectUri' => $redirectUri,
             'scopes' => $scopes
         ]);
 
-        $data->configuration = $configurationDTO->toJson();
+        $data->configuration = $configurationDTO;
         $data->save();
         return $data;
     }
@@ -141,15 +119,15 @@ class SocialRepository
     /**
      * @throws \RuntimeException
      */
-    public final function getAccountConfiguration(int $account): ConfigurationDTO
+    public final function getAccountConfiguration(int $account,string $type): ConfigurationDTO
     {
-        $data = SocialAccountConfiguration::find($account);
+        $data = SocialAccountConfiguration::where('social_account_id', $account)->where('type', $type)->first();
 
         if (!$data) {
             throw new \RuntimeException("Account with id {$account} not found in the database");
         }
 
-        return ConfigurationDTO::from($data->configuration);
+        return ConfigurationDTO::from($data);
     }
 
 
@@ -167,18 +145,8 @@ class SocialRepository
         return $this;
     }
 
-    public final function getScopes(int $account, string $provider):array
-    {
-        $data = SocialAccountConfiguration::where('social_account_id',$account)
-            ->where('type',$provider)->first();
-
-        $configuration = ConfigurationDTO::from($data->configuration);
-
-        return $configuration->scopes;
-    }
 
     /**
-     * @todo refactor this to use the configuration dto
      * @throws \Exception
      */
     public final function createAccountConfiguration(
@@ -196,12 +164,12 @@ class SocialRepository
             return SocialAccountConfiguration::create([
                 'social_account_id' => $account,
                 'type' => $type,
-                'configuration' => ConfigurationDTO::from([
+                'configuration' =>json_encode([
                     'clientId' => $clientId,
                     'clientSecret' => $clientSecret,
                     'redirectUri' => $redirectUri,
                     'scopes' => $scopes
-                ])->toJson()
+                ]),
             ]);
         } catch (QueryException $exception) {
             throw new \Exception($exception->getMessage());

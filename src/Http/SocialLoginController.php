@@ -26,14 +26,10 @@ class SocialLoginController extends \Illuminate\Routing\Controller
     {
         $service = $this->socialRepository->getSocialService($account, $provider);
 
-        $scopes = $this->socialRepository->getScopes($account, $provider);
-
-
         //set a temp session to get the account
         $this->socialRepository->setSession($account, $provider);
 
         if (!$request->has('code')) {
-            //@todo here set scopes from the configuration dto
             $authUrl = $service->getAuthUrl([]);
             return redirect($authUrl);
         }
@@ -50,12 +46,13 @@ class SocialLoginController extends \Illuminate\Routing\Controller
         try {
             $account = session()->get('account');
             $provider = session()->get('provider');
+
             $provider = $this->socialRepository->getSocialService($account, $provider);
             $accessToken = $provider->getAccessToken($request->get('code'));
 
             //@todo inspect this to move to repository
             $user = $provider->getProfile($accessToken);
-            
+
 
             //
             $credentials = SocialAccountConfiguration::where('social_account_id', $account)

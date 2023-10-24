@@ -14,8 +14,8 @@ use Spatie\LaravelData\Data;
  */
 class ConfigurationDTO extends Data
 {
-    public ?string $clientId;
-    public ?string $clientSecret;
-    public ?string $redirectUri;
-    public ?array $scopes = [];
+    public ?int $social_account_id;
+    public ?string $type;
+    public ?object $configuration;
+    public ?object $information;
 }

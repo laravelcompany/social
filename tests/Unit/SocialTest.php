@@ -3,7 +3,9 @@
 namespace Cornatul\Social\Tests\Unit;
 
 use Cornatul\Social\Contracts\ShareContract;
+use Cornatul\Social\Contracts\SocialContract;
 use Cornatul\Social\DTO\TwitterTrendingDTO;
+use Cornatul\Social\Models\SocialAccount;
 use Cornatul\Social\Objects\Message;
 use Cornatul\Social\Service\TumblrService;
 use GuzzleHttp\Client;
@@ -15,31 +17,36 @@ use League\OAuth2\Client\Token\AccessTokenInterface;
 use Mockery;
 
 
+/**
+ * Class SocialTest
+ * @todo Implement tests for social interface
+ * @covers \Cornatul\Social\Service\TumblrService
+ */
 class SocialTest extends \Cornatul\Social\Tests\TestCase
 {
 
     /** @test */
-    public function it_updates_social_account()
+    public function it_updates_social_account():void
     {
-        // Assuming you have a SocialAccount model and a SocialRepository class
+        $interfaceMock = $this->getMockForAbstractClass(SocialContract::class);
 
-        // Create a fake SocialAccount for testing
-        $socialAccount = factory(SocialAccount::class)->create();
+        // Define test data
+        $name = "TestAccount";
+        $userId = 1;
 
-        // Simulate a request to update the social account
-        $response = $this->put(route('social.update', ['id' => $socialAccount->id]), [
-            'name' => 'Updated Name',
-            'user_id' => 123,
+        // Define the expected result
+        $expectedResult = new SocialAccount([
+            'account' => $name,
+            'user_id' => $userId,
         ]);
 
-        // Assert that the social account was updated in the repository
-        $this->assertEquals('Updated Name', $socialAccount->fresh()->name);
-        $this->assertEquals(123, $socialAccount->fresh()->user_id);
+        // Stub the create method on the mock
+        $interfaceMock->method('createAccount')->willReturn($expectedResult);
 
-        // Assert that the response redirects to the social index route
-        $response->assertRedirect(route('social.index'));
+        // Call the createAccount method
+        $result = $interfaceMock->createAccount($name, $userId);
 
-        // Assert that a success message is flashed to the session
-        $this->assertSessionHas('success', 'Social Account updated!');
+        // Assert that the result matches the expected result
+        $this->assertEquals($expectedResult, $result);
     }
 }

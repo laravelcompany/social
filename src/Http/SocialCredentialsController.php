@@ -33,15 +33,12 @@ class SocialCredentialsController extends Controller
     /**
      * @throws \Exception
      */
-    public final function edit(int $credentialsID): View|Application
+    public final function edit(int $account, string $provider): View|Application
     {
-        $credentials = $this->socialRepository->getAccountConfiguration($credentialsID);
-
-        $socialAccountConfiguration = SocialAccountConfiguration::find($credentialsID);
+        $credentials = $this->socialRepository->getAccountConfiguration($account, $provider);
 
         return view('social::credentials.edit', [
             'credentials' => $credentials,
-            'socialAccountConfiguration' => $socialAccountConfiguration
         ]);
     }
 
