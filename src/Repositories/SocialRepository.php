@@ -2,6 +2,7 @@
 
 namespace Cornatul\Social\Repositories;
 
+use Cornatul\Social\Actions\UpdateSocialAccountConfiguration;
 use Cornatul\Social\Contracts\SocialContract;
 use Cornatul\Social\DTO\ConfigurationDTO;
 use Cornatul\Social\Models\SocialAccount;
@@ -15,7 +16,7 @@ use Smolblog\OAuth2\Client\Provider\Twitter;
 use RuntimeException;
 
 /**
- * @todo Refactor this class to implement multiple interfaces
+ *
  */
 class SocialRepository implements SocialContract
 {
@@ -45,7 +46,6 @@ class SocialRepository implements SocialContract
     }
 
     /**
-     * @todo refactor this to use the configuration dto
      * @param int $id
      * @param string $name
      * @param int $userId
@@ -59,6 +59,7 @@ class SocialRepository implements SocialContract
         $account->save();
         return $account;
     }
+
     public final function destroyAccount(int $id): void
     {
         $account = SocialAccount::find($id);
@@ -89,29 +90,25 @@ class SocialRepository implements SocialContract
      * @throws \Exception
      */
     public final function updateAccountConfiguration(
-        int $account,
-        string $type,
-        string $clientId,
-        string $clientSecret,
-        string $redirectUri,
-        array $scopes
+        UpdateSocialAccountConfiguration $request,
     ): SocialAccountConfiguration
     {
-        $data = SocialAccountConfiguration::where('social_account_id',$account)
-            ->where('type',$type)->first();
+
+        $data = SocialAccountConfiguration::where('social_account_id',$request->input('id'))
+            ->where('type',$request->input('type'))->first();
 
         if (!$data) {
-            throw new \Exception("Account with id {$account} not found in the database");
+            throw new \Exception("Account with id {$request->input('account')} not found in the database");
         }
 
-        $configurationDTO = json_encode([
-            'clientId' => $clientId,
-            'clientSecret' => $clientSecret,
-            'redirectUri' => $redirectUri,
-            'scopes' => $scopes
+        $configuration = json_encode([
+            'clientId' =>  $request->input('clientId'),
+            'clientSecret' =>  $request->input('clientSecret'),
+            'redirectUri' => $request->input('redirectUri'),
+            'scopes' =>  explode(',', $request->input('scopes'))
         ]);
 
-        $data->configuration = $configurationDTO;
+        $data->configuration = $configuration;
         $data->save();
         return $data;
     }

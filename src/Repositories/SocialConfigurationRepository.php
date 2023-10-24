@@ -14,6 +14,7 @@ use Smolblog\OAuth2\Client\Provider\Twitter;
 use RuntimeException;
 
 /**
+ * @todo This is not yet being used but we can used
  */
 class SocialConfigurationRepository implements SocialConfiguration
 {

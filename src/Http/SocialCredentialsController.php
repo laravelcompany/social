@@ -51,15 +51,7 @@ class SocialCredentialsController extends Controller
      */
     public final function update(UpdateSocialAccountConfiguration $request): RedirectResponse
     {
-
-        $this->socialRepository->updateAccountConfiguration(
-            $request->input('id'),
-            $request->input('type'),
-            $request->input('clientId'),
-            $request->input('clientSecret'),
-            $request->input('redirectUri'),
-            explode(',', $request->input('scopes'))
-        );
+        $this->socialRepository->updateAccountConfiguration($request);
 
         return redirect()->route('social.index')->with('success', 'Credentials updated successfully');
     }
