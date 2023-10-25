@@ -7,6 +7,8 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class SocialOauthService
 {
@@ -17,7 +19,7 @@ class SocialOauthService
         $this->provider = $provider;
     }
 
-    public function getAuthUrl(array $scopes)
+    public final function getAuthUrl(array $scopes)
     {
         //todo add scopes here using the id
         $options = [
@@ -31,11 +33,11 @@ class SocialOauthService
     /**
      * @throws IdentityProviderException
      */
-    public final function getAccessToken(string $code): AccessTokenInterface
+    public final function getAccessToken(string $code, string $code_verifier=''): AccessTokenInterface
     {
         return $this->provider->getAccessToken('authorization_code', [
             'code' => $code,
-            'code_verifier' => session()->get('oauth2verifier'),
+            'code_verifier' => $code_verifier,
         ]);
     }
 

@@ -2,28 +2,43 @@
 
 return [
     'linkedin' => [
-        'clientId' => env('LINKEDIN_CLIENT_ID', ''),
-        'clientSecret' => env('LINKEDIN_CLIENT_SECRET', ''),
-        'redirectUri' => env('LINKEDIN_REDIRECT_URI', ''),
-    ],
-    'google' => [
-        'clientId' => env('GOOGLE_CLIENT_ID', ''),
-        'clientSecret' => env('GOOGLE_CLIENT_SECRET', ''),
-        'redirectUri' => env('GOOGLE_REDIRECT_URI', ''),
-    ],
-    'twitter' => [
-        'consumerKey' => env('TWITTER_CONSUMER_KEY', ''),
-        'consumerSecret' => env('TWITTER_CONSUMER_SECRET', ''),
-        'accessToken' => env('TWITTER_ACCESS_TOKEN', ''),
-        'accessTokenSecret' => env('TWITTER_ACCESS_TOKEN_SECRET', ''),
-        'apiVersion' => env('TWITTER_API_VERSION', '1.1'),
+        'client_id' => env('LINKEDIN_CLIENT_ID', ''),
+        'client_secret' => env('LINKEDIN_CLIENT_SECRET', ''),
+        'redirect_uri' => env('LINKEDIN_REDIRECT_URI', ''),
     ],
 
-    'github' => [
-        'clientId' => env('GITHUB_CLIENT_ID', ''),
-        'clientSecret' => env('GITHUB_CLIENT_SECRET', ''),
-        'redirectUri' => env('GITHUB_REDIRECT_URI', ''),
+    'facebook' => [
+        'client_id' => env('FACEBOOK_CLIENT_ID', ''),
+        'client_secret' => env('FACEBOOK_CLIENT_SECRET', ''),
+        'redirect_uri' => env('FACEBOOK_REDIRECT_URI', ''),
+        'scopes' =>[
+            'pages_manage_posts',
+            'pages_read_engagement',
+            'user_posts'
+
+        ]
     ],
+    'twitter' => [
+        'client_id' => env('TWITTER_CLIENT_ID', ''),
+        'client_secret' => env('TWITTER_CLIENT_SECRET', ''),
+        'redirect_uri' => env('TWITTER_REDIRECT_URI', ''),
+        'scopes' => [
+            'tweet.read',
+            'users.read',
+            'twitter.write',
+        ],
+    ],
+    'github' => [
+        'client_id' => env('GITHUB_CLIENT_ID', ''),
+        'client_secret' => env('GITHUB_CLIENT_SECRET', ''),
+        'redirect_uri' => env('GITHUB_REDIRECT_URI', ''),
+    ],
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID', ''),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET', ''),
+        'redirect_uri' => env('GOOGLE_REDIRECT_URI', ''),
+    ],
+
     'medium' => [
         'token' => env('MEDIUM_TOKEN', ''),
     ],

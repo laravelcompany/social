@@ -18,8 +18,34 @@ use RuntimeException;
  */
 class SocialConfigurationRepository implements SocialConfiguration
 {
-    public final function getAccountConfiguration(int $account): SocialAccountConfiguration
+    /**
+     * @throws \RuntimeException
+     */
+    public final function getAccountConfiguration(int $account,string $type): ConfigurationDTO
     {
-        return SocialAccountConfiguration::find($account);
+        $data = SocialAccountConfiguration::where('social_account_id', $account)->where('type', $type)->first();
+
+        if (!$data) {
+            throw new \RuntimeException("Account with id {$account} not found in the database");
+        }
+
+        return ConfigurationDTO::from($data);
+    }
+
+    public final function saveAccountInformation(array $data):bool
+    {
+
+        $account = request()->session()->get('account');
+
+        $provider = request()->session()->get('provider');
+
+        $credentials = SocialAccountConfiguration::where('social_account_id', $account)
+            ->where('type', $provider)
+            ->first();
+
+        $credentials->information = json_encode($data);
+
+        return $credentials->save();
+
     }
 }

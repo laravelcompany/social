@@ -65,17 +65,19 @@ class SocialRepository implements SocialContract
         $account->delete();
     }
     /**
-     * @throws \Exception
+     * @throws RuntimeException
      */
-    public final function getSocialService(int $social_account_id, string $provider): SocialOauthService
+    public final function getSocialService(): SocialOauthService
     {
-        $data = SocialAccountConfiguration::where('social_account_id',$social_account_id)
-            ->where('type',$provider)->first();
+
+        $account = request()->session()->get('account');
+        $provider = request()->session()->get('provider');
+
+        $data = SocialAccountConfiguration::where('social_account_id',$account)->where('type',$provider)->first();
 
         $credentials = ConfigurationDTO::from($data);
 
         $providerClass = $this->providerClasses[$data->type] ?? null;
-
 
         if (is_null($providerClass)) {
             throw new RuntimeException("This type of service is not supported or it is not implemented yet");
@@ -84,12 +86,9 @@ class SocialRepository implements SocialContract
         $provider = new $providerClass((array) $credentials->configuration);
 
         if($data->type === self::ACCOUNT_TWITTER){
-            $provider->setPkce(true);
-            session()->put('oauth2state', $provider->getState() ?? "");
-            session()->put('oauth2verifier', $provider->getPkceVerifier() ?? "");
+            session()->put('oauth2state', $provider->getState());
+            session()->put('oauth2verifier', $provider->getPkceVerifier());
         }
-
-
 
         return new SocialOauthService($provider);
     }
@@ -118,19 +117,7 @@ class SocialRepository implements SocialContract
         return $data;
     }
 
-    /**
-     * @throws \RuntimeException
-     */
-    public final function getAccountConfiguration(int $account,string $type): ConfigurationDTO
-    {
-        $data = SocialAccountConfiguration::where('social_account_id', $account)->where('type', $type)->first();
 
-        if (!$data) {
-            throw new \RuntimeException("Account with id {$account} not found in the database");
-        }
-
-        return ConfigurationDTO::from($data);
-    }
 
 
     public final function setSession(int $account, string $provider): self
@@ -144,6 +131,8 @@ class SocialRepository implements SocialContract
     {
         session()->remove('account');
         session()->remove('provider');
+        session()->remove('oauth2state');
+        session()->remove('oauth2verifier');
         return $this;
     }
 

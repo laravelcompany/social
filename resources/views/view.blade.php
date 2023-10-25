@@ -43,7 +43,7 @@
                             {{  $config->type }}
                         </td>
                         <td>
-                            {{   json_encode($config->information) ?? "" }}
+                           @todo get the access token validation or date when expires for each social account
                         </td>
                         <td class="text-right">
                             <a class="btn btn-info"

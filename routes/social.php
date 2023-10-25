@@ -35,4 +35,8 @@ Route::group(['middleware' => ['web','auth'],'prefix' => 'social', 'as' => 'soci
     //Share
     Route::get('/share/{account}', [\Cornatul\Social\Http\ShareController::class, 'share'])->name('share.create');
     Route::post('/share/', [\Cornatul\Social\Http\ShareController::class, 'send'])->name('share.send');
+
+
+    //Linkedin
+    Route::get('/login/{account}/linkedin', [\Cornatul\Social\Http\Login\LoginLinkedInController::class, 'login'])->name('linkedin.login');
 });
