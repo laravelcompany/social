@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\FacebookProvider;
 use Laravel\Socialite\Two\GithubProvider;
+use Laravel\Socialite\Two\GoogleProvider;
 use Laravel\Socialite\Two\LinkedInProvider;
 use Laravel\Socialite\Two\TwitterProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
@@ -26,6 +27,7 @@ class SocialLoginController extends \Illuminate\Routing\Controller
         'twitter' => TwitterProvider::class,
         'linkedin' => LinkedInProvider::class,
         'facebook' => FacebookProvider::class,
+        'google' => GoogleProvider::class,
     ];
 
     public function __construct(SocialRepository $socialRepository, SocialConfigurationRepository $socialConfigurationRepository)
@@ -36,6 +38,7 @@ class SocialLoginController extends \Illuminate\Routing\Controller
     }
 
     /**
+     * @todo move the logic of the session to the repo
      * @throws \Exception
      */
     public final function login(int $account, string $provider, Request $request): string
@@ -52,12 +55,15 @@ class SocialLoginController extends \Illuminate\Routing\Controller
 
         $providerClass = $this->providers[$provider] ?? "The selected '$provider' is not yet implemented";
 
-        return Socialite::buildProvider($providerClass, (array) $configuration->configuration)->redirect();
+        return Socialite::buildProvider($providerClass, (array) $configuration->configuration)
+            ->scopes($configuration->configuration->scopes ?? [])
+            ->redirect();
 
     }
 
 
     /**
+     * @todo Create a configuration DTO  for the userInformation
      * @throws IdentityProviderException
      * @throws RuntimeException
      */
@@ -70,8 +76,23 @@ class SocialLoginController extends \Illuminate\Routing\Controller
         $providerClass = $this->providers[$provider] ?? "The selected '$provider' is not yet implemented";
         $configuration = $this->socialConfigurationRepository->getAccountConfiguration($account, $provider);
         $user = Socialite::buildProvider($providerClass, (array) $configuration->configuration)->user();
-        dd($user);
-        //@todo destroy the sessions if user is success
+        $data = [
+            // OAuth 2.0 providers
+            'token' => $user->token,
+            'refreshToken' => $user->refreshToken,
+            'expiresIn' => $user->expiresIn,
+
+            // All providers
+            'id' => $user->getId(),
+            'nickname' => $user->getNickname(),
+            'name' => $user->getName(),
+            'email' => $user->getEmail(),
+            'avatar' => $user->getAvatar(),
+        ];
+        $this->socialConfigurationRepository->saveAccountInformation($data);
+        //todo destroy the sessions
+
+        return redirect()->route('social.index')->with('success', "Account {$provider} connected successfully");
 
     }
 

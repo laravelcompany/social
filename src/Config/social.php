@@ -5,6 +5,9 @@ return [
         'client_id' => env('LINKEDIN_CLIENT_ID', ''),
         'client_secret' => env('LINKEDIN_CLIENT_SECRET', ''),
         'redirect_uri' => env('LINKEDIN_REDIRECT_URI', ''),
+        'scopes' => [
+            'r_liteprofile',
+        ]
     ],
 
     'facebook' => [
@@ -25,7 +28,8 @@ return [
         'scopes' => [
             'tweet.read',
             'users.read',
-            'twitter.write',
+            'offline.access',
+            'tweet.write'
         ],
     ],
     'github' => [

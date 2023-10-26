@@ -32,6 +32,7 @@ class SocialConfigurationRepository implements SocialConfiguration
         return ConfigurationDTO::from($data);
     }
 
+
     public final function saveAccountInformation(array $data):bool
     {
 
