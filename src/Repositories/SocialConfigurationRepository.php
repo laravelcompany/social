@@ -2,6 +2,8 @@
 
 namespace Cornatul\Social\Repositories;
 
+use Cornatul\Social\Actions\CreateSocialAccountConfiguration;
+use Cornatul\Social\Actions\UpdateSocialAccountConfiguration;
 use Cornatul\Social\Contracts\SocialConfiguration;
 use Cornatul\Social\Contracts\SocialContract;
 use Cornatul\Social\DTO\ConfigurationDTO;
@@ -50,4 +52,58 @@ class SocialConfigurationRepository implements SocialConfiguration
         return $credentials->save();
 
     }
+
+    //destroy configuration
+    public final function destroyAccountConfiguration(int $account, string $type): bool
+    {
+        $configuration = SocialAccountConfiguration::where('social_account_id', $account)->where('type', $type)->first();
+
+        if (!$configuration) {
+            throw new \RuntimeException("Account with id {$account} not found in the database");
+        }
+
+        return $configuration->delete();
+    }
+
+
+
+    /**
+     * @throws \Exception
+     */
+    public final function updateAccountConfiguration(UpdateSocialAccountConfiguration $request,): SocialAccountConfiguration
+    {
+        $data = SocialAccountConfiguration::where('social_account_id',$request->input('id'))
+            ->where('type',$request->input('type'))->first();
+
+        if (!$data) {
+            throw new \Exception("Account with id {$request->input('account')} not found in the database");
+        }
+
+        $configuration = json_encode([
+            'client_id' =>  $request->input('client_id'),
+            'client_secret' =>  $request->input('client_secret'),
+            'redirect' => $request->input('redirect'),
+            'scopes' =>  explode(',', $request->input('scopes'))
+        ]);
+
+        $data->configuration = $configuration;
+        $data->save();
+        return $data;
+    }
+
+
+    public final function createAccountConfiguration(CreateSocialAccountConfiguration $request): SocialAccountConfiguration
+    {
+        return SocialAccountConfiguration::create([
+            'social_account_id' => $request->input('account'),
+            'type' => $request->input('type'),
+            'configuration' =>json_encode([
+                'client_id' => $request->input('client_id'),
+                'client_secret' => $request->input('client_secret'),
+                'redirect' => $request->input('redirect'),
+                'scopes' => explode(',', $request->input('scopes'))
+            ]),
+        ]);
+    }
+
 }

@@ -46,14 +46,14 @@ class SocialRepository implements SocialContract
 
     /**
      * @param int $id
-     * @param string $name
+     * @param string $account
      * @param int $userId
      * @return SocialAccount
      */
-    public final function updateAccount(int $id, string $name, int $userId): SocialAccount
+    public final function updateAccount(int $id, string $account, int $userId): SocialAccount
     {
         $account = SocialAccount::find($id);
-        $account->account = $name;
+        $account->account = $account;
         $account->user_id = $userId;
         $account->save();
         return $account;
@@ -93,31 +93,6 @@ class SocialRepository implements SocialContract
         return new SocialOauthService($provider);
     }
 
-    /**
-     * @throws \Exception
-     */
-    public final function updateAccountConfiguration(UpdateSocialAccountConfiguration $request,): SocialAccountConfiguration
-    {
-        $data = SocialAccountConfiguration::where('social_account_id',$request->input('id'))
-            ->where('type',$request->input('type'))->first();
-
-        if (!$data) {
-            throw new \Exception("Account with id {$request->input('account')} not found in the database");
-        }
-
-        $configuration = json_encode([
-            'client_id' =>  $request->input('client_id'),
-            'client_secret' =>  $request->input('client_secret'),
-            'redirect' => $request->input('redirect'),
-            'scopes' =>  explode(',', $request->input('scopes'))
-        ]);
-
-        $data->configuration = $configuration;
-        $data->save();
-        return $data;
-    }
-
-
 
 
     public final function setSession(int $account, string $provider): self
@@ -140,30 +115,4 @@ class SocialRepository implements SocialContract
     /**
      * @throws \Exception
      */
-    public final function createAccountConfiguration(
-        int $account,
-        string $type,
-        string $clientId,
-        string $clientSecret,
-        string $redirectUri,
-        array $scopes
-    ): SocialAccountConfiguration
-    {
-
-        try {
-
-            return SocialAccountConfiguration::create([
-                'social_account_id' => $account,
-                'type' => $type,
-                'configuration' =>json_encode([
-                    'client_id' => $clientId,
-                    'client_secret' => $clientSecret,
-                    'redirect' => $redirectUri,
-                    'scopes' => $scopes
-                ]),
-            ]);
-        } catch (QueryException $exception) {
-            throw new \Exception($exception->getMessage());
-        }
-    }
 }

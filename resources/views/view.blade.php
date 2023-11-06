@@ -50,9 +50,13 @@
                                href="{{ route('social.login', ['account' => $config->social_account_id, 'provider' => $config->type]) }}">
                                 {{ __('Login') }} {{ $config->type }}
                             </a>
-                            <a class="btn btn-danger"
+                            <a class="btn btn-success"
                                href="{{ route('social.credentials.edit', ['account' => $config->social_account_id, 'provider' => $config->type]) }}">
                                 {{ __('Edit') }} {{ $config->type }}
+                            </a>
+                            <a class="btn btn-danger"
+                               href="{{ route('social.credentials.destroy', ['account' => $config->social_account_id, 'provider' => $config->type]) }}">
+                                {{ __('Delete') }} {{ $config->type }}
                             </a>
                         </td>
 

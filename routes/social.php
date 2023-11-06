@@ -30,7 +30,8 @@ Route::group(['middleware' => ['web','auth'],'prefix' => 'social', 'as' => 'soci
     Route::get('/credentials/edit/{account}/{provider}', [SocialCredentialsController::class, 'edit'])->name('credentials.edit');
     Route::post('/credentials/update', [SocialCredentialsController::class, 'update'])->name('credentials.update');
     Route::post('/credentials/create/', [SocialCredentialsController::class, 'save'])->name('credentials.save');
-
+    //delete credentials
+    Route::get('/credentials/destroy/{account}/{provider}', [SocialCredentialsController::class, 'destroy'])->name('credentials.destroy');
 
     //Share
     Route::get('/share/{account}', [\Cornatul\Social\Http\ShareController::class, 'share'])->name('share.create');
@@ -38,5 +39,4 @@ Route::group(['middleware' => ['web','auth'],'prefix' => 'social', 'as' => 'soci
 
 
     //Linkedin
-    Route::get('/login/{account}/linkedin', [\Cornatul\Social\Http\Login\LoginLinkedInController::class, 'login'])->name('linkedin.login');
 });
