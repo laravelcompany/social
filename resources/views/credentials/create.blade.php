@@ -26,7 +26,7 @@
                     <label for="exampleInputEmail1">
                         {{ __('Client id') }}
                     </label>
-                    <input type="text" class="form-control" id="exampleInputEmail1" name="clientId"
+                    <input type="text" class="form-control" id="exampleInputEmail1" name="client_id"
                            placeholder=" {{ __('Client id') }}">
                 </div>
 
@@ -48,7 +48,7 @@
                     <label for="exampleInputEmail1">
                         {{ __('Client Secret') }}
                     </label>
-                    <input type="text" class="form-control" id="exampleInputEmail1" name="clientSecret"
+                    <input type="text" class="form-control" id="exampleInputEmail1" name="client_secret"
                            placeholder="{{ __('Client Secret') }}">
                 </div>
 
@@ -56,7 +56,7 @@
                     <label for="exampleInputEmail1">
                         {{ __('Redirect Uri') }}
                     </label>
-                    <input type="text" class="form-control" id="exampleInputEmail1" name="redirectUri"
+                    <input type="text" class="form-control" id="exampleInputEmail1" name="redirect"
                            placeholder=" {{ __('Redirect Uri') }}">
                 </div>
 

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * * @param string $token
+ * * @param string $secret
+ * * @param int $social_account_id
  * * @method static create(array $data)
  * * @method static find (int $id)
  * * @method static where (string $column, string $value)

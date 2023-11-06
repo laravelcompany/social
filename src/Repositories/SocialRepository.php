@@ -39,9 +39,9 @@ class SocialRepository implements SocialContract
             'user_id' => $userId,
         ]);
     }
-    public final function getAccount(int $id): SocialAccount
+    public final function getAccount(int $accountID): SocialAccount
     {
-        return SocialAccount::with(['configuration'])->find($id)->first();
+        return SocialAccount::with(['configuration'])->find($accountID);
     }
 
     /**
@@ -106,9 +106,9 @@ class SocialRepository implements SocialContract
         }
 
         $configuration = json_encode([
-            'clientId' =>  $request->input('clientId'),
-            'clientSecret' =>  $request->input('clientSecret'),
-            'redirectUri' => $request->input('redirectUri'),
+            'client_id' =>  $request->input('client_id'),
+            'client_secret' =>  $request->input('client_secret'),
+            'redirect' => $request->input('redirect'),
             'scopes' =>  explode(',', $request->input('scopes'))
         ]);
 
@@ -156,9 +156,9 @@ class SocialRepository implements SocialContract
                 'social_account_id' => $account,
                 'type' => $type,
                 'configuration' =>json_encode([
-                    'clientId' => $clientId,
-                    'clientSecret' => $clientSecret,
-                    'redirectUri' => $redirectUri,
+                    'client_id' => $clientId,
+                    'client_secret' => $clientSecret,
+                    'redirect' => $redirectUri,
                     'scopes' => $scopes
                 ]),
             ]);

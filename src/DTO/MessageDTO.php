@@ -14,4 +14,13 @@ use Spatie\LaravelData\Data;
  */
 class MessageDTO extends Data
 {
+    public function __construct(
+        public string $message,
+    ) {
+    }
+
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
 }

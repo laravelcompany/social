@@ -7,6 +7,11 @@ return [
         'redirect_uri' => env('LINKEDIN_REDIRECT_URI', ''),
         'scopes' => [
             'r_liteprofile',
+            'w_member_social',
+            'openid',
+            'r_emailaddress',
+            'profile',
+            'email',
         ]
     ],
 
@@ -25,6 +30,11 @@ return [
         'client_id' => env('TWITTER_CLIENT_ID', ''),
         'client_secret' => env('TWITTER_CLIENT_SECRET', ''),
         'redirect_uri' => env('TWITTER_REDIRECT_URI', ''),
+        'consumer_key' => env('TWITTER_CONSUMER_KEY', ''),
+        'consumer_secret' => env('TWITTER_CONSUMER_SECRET', ''),
+        'access_token' => env('TWITTER_ACCESS_TOKEN', ''),
+        'access_token_secret' => env('TWITTER_ACCESS_TOKEN_SECRET', ''),
+
         'scopes' => [
             'tweet.read',
             'users.read',

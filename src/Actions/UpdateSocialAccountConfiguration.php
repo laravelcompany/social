@@ -11,9 +11,9 @@ final class UpdateSocialAccountConfiguration extends FormRequest
     {
         return [
             'id' => 'required|int',
-            'clientId' => 'required|string',
-            'clientSecret' => 'required|string',
-            'redirectUri' => 'required|string',
+            'client_id' => 'required|string',
+            'client_secret' => 'required|string',
+            'redirect' => 'required|string',
             'scopes' => 'nullable|string',
         ];
     }

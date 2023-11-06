@@ -69,9 +69,9 @@ class SocialCredentialsController extends Controller
         $this->socialRepository->createAccountConfiguration(
             $request->input('account'),
             $request->input('type'),
-            $request->input('clientId'),
-            $request->input('clientSecret'),
-            $request->input('redirectUri'),
+            $request->input('client_id'),
+            $request->input('client_secret'),
+            $request->input('redirect'),
             explode(',', $request->input('scopes'))
         );
 

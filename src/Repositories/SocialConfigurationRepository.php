@@ -5,6 +5,7 @@ namespace Cornatul\Social\Repositories;
 use Cornatul\Social\Contracts\SocialConfiguration;
 use Cornatul\Social\Contracts\SocialContract;
 use Cornatul\Social\DTO\ConfigurationDTO;
+use Cornatul\Social\DTO\UserInformationDTO;
 use Cornatul\Social\Models\SocialAccount;
 use Cornatul\Social\Models\SocialAccountConfiguration;
 use Cornatul\Social\Service\SocialOauthService;
@@ -14,7 +15,7 @@ use Smolblog\OAuth2\Client\Provider\Twitter;
 use RuntimeException;
 
 /**
- * @todo This is not yet being used but we can used
+ *
  */
 class SocialConfigurationRepository implements SocialConfiguration
 {
@@ -33,7 +34,7 @@ class SocialConfigurationRepository implements SocialConfiguration
     }
 
 
-    public final function saveAccountInformation(array $data):bool
+    public final function saveAccountInformation(UserInformationDTO $userInformationDTO):bool
     {
 
         $account = request()->session()->get('account');
@@ -44,7 +45,7 @@ class SocialConfigurationRepository implements SocialConfiguration
             ->where('type', $provider)
             ->first();
 
-        $credentials->information = json_encode($data);
+        $credentials->information = ($userInformationDTO->toJson());
 
         return $credentials->save();
 

@@ -2,6 +2,7 @@
 
 namespace Cornatul\Social\Http;
 
+use Cornatul\Social\DTO\UserInformationDTO;
 use Cornatul\Social\Models\SocialAccountConfiguration;
 use Cornatul\Social\Repositories\SocialConfigurationRepository;
 use Cornatul\Social\Repositories\SocialRepository;
@@ -63,7 +64,7 @@ class SocialLoginController extends \Illuminate\Routing\Controller
 
 
     /**
-     * @todo Create a configuration DTO  for the userInformation
+     *
      * @throws IdentityProviderException
      * @throws RuntimeException
      */
@@ -76,7 +77,7 @@ class SocialLoginController extends \Illuminate\Routing\Controller
         $providerClass = $this->providers[$provider] ?? "The selected '$provider' is not yet implemented";
         $configuration = $this->socialConfigurationRepository->getAccountConfiguration($account, $provider);
         $user = Socialite::buildProvider($providerClass, (array) $configuration->configuration)->user();
-        $data = [
+        $data = UserInformationDTO::from([
             // OAuth 2.0 providers
             'token' => $user->token,
             'refreshToken' => $user->refreshToken,
@@ -88,9 +89,12 @@ class SocialLoginController extends \Illuminate\Routing\Controller
             'name' => $user->getName(),
             'email' => $user->getEmail(),
             'avatar' => $user->getAvatar(),
-        ];
+        ]);
+
         $this->socialConfigurationRepository->saveAccountInformation($data);
         //todo destroy the sessions
+        session()->remove('account');
+        session()->remove('provider');
 
         return redirect()->route('social.index')->with('success', "Account {$provider} connected successfully");
 
