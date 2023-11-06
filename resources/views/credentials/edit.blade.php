@@ -38,19 +38,19 @@
                 <div class="form-group">
                     <label for="exampleInputEmail1">Client Id</label>
                     <input type="text" class="form-control" id="exampleInputEmail1" name="client_id"
-                           value="{{ $credentials->configuration->clientId ?? '' }}"
+                           value="{{ $credentials->configuration->client_id ?? '' }}"
                            placeholder="Enter Client ID">
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Client Secret</label>
                     <input type="text" class="form-control" id="exampleInputEmail1" name="client_secret"
-                           value="{{ $credentials->configuration->clientSecret ?? '' }}"
+                           value="{{ $credentials->configuration->client_secret ?? '' }}"
                            placeholder="Enter Client Secret">
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Client Redirect Url</label>
                     <input type="text" class="form-control" id="exampleInputEmail1" name="redirect"
-                           value="{{ $credentials->configuration->redirectUri ?? '' }}"
+                           value="{{ $credentials->configuration->redirect ?? '' }}"
                            placeholder="Enter Client Redirect">
                 </div>
                 <div class="form-group">

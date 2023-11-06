@@ -6,6 +6,7 @@ use Cornatul\Social\DTO\UserInformationDTO;
 use Cornatul\Social\Models\SocialAccountConfiguration;
 use Cornatul\Social\Repositories\SocialConfigurationRepository;
 use Cornatul\Social\Repositories\SocialRepository;
+use Cornatul\Social\Social\CustomLinkedInProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
@@ -26,7 +27,7 @@ class SocialLoginController extends \Illuminate\Routing\Controller
     protected array $providers = [
         'github' => GithubProvider::class,
         'twitter' => TwitterProvider::class,
-        'linkedin' => LinkedInProvider::class,
+        'linkedin' => CustomLinkedInProvider::class,
         'facebook' => FacebookProvider::class,
         'google' => GoogleProvider::class,
     ];
@@ -57,7 +58,7 @@ class SocialLoginController extends \Illuminate\Routing\Controller
         $providerClass = $this->providers[$provider] ?? "The selected '$provider' is not yet implemented";
 
         return Socialite::buildProvider($providerClass, (array) $configuration->configuration)
-            ->scopes($configuration->configuration->scopes ?? [])
+            ->scopes($providerClass->scopes ?? [])
             ->redirect();
 
     }
@@ -74,9 +75,13 @@ class SocialLoginController extends \Illuminate\Routing\Controller
         $account = session()->get('account');
         $provider = session()->get('provider');
 
+
+
         $providerClass = $this->providers[$provider] ?? "The selected '$provider' is not yet implemented";
         $configuration = $this->socialConfigurationRepository->getAccountConfiguration($account, $provider);
-        $user = Socialite::buildProvider($providerClass, (array) $configuration->configuration)->user();
+        $user = Socialite::buildProvider($providerClass, (array) $configuration->configuration)
+            ->scopes($providerClass->scopes ?? [])
+            ->user();
         $data = UserInformationDTO::from([
             // OAuth 2.0 providers
             'token' => $user->token,
@@ -87,7 +92,7 @@ class SocialLoginController extends \Illuminate\Routing\Controller
             'id' => $user->getId(),
             'nickname' => $user->getNickname(),
             'name' => $user->getName(),
-            'email' => $user->getEmail(),
+            'email' => "",
             'avatar' => $user->getAvatar(),
         ]);
 
