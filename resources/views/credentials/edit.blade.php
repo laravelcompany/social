@@ -53,12 +53,6 @@
                            value="{{ $credentials->configuration->redirect ?? '' }}"
                            placeholder="Enter Client Redirect">
                 </div>
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Scopes</label>
-                    <input type="text" class="form-control" id="exampleInputEmail1" name="scopes"
-                           value="{{  implode('', $credentials->configuration->scopes) ?? '' }}"
-                           placeholder="Enter Client Scopes">
-                </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>

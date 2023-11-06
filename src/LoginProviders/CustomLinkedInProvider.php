@@ -1,6 +1,6 @@
 <?php
 
-namespace Cornatul\Social\Social;
+namespace Cornatul\Social\LoginProviders;
 
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Arr;
@@ -10,12 +10,12 @@ class CustomLinkedInProvider extends \Laravel\Socialite\Two\LinkedInProvider
 {
     public $scopes = ["profile","w_member_social", "openid", "email"];
 
-    protected function getUserByToken($token)
+    public final function getUserByToken($token):array
     {
         return $this->getBasicProfile($token);
     }
 
-    protected function getBasicProfile($token)
+    public final function getBasicProfile($token): array
     {
         $response = $this->getHttpClient()->get('https://api.linkedin.com/v2/userinfo', [
             RequestOptions::HEADERS => [
@@ -33,7 +33,7 @@ class CustomLinkedInProvider extends \Laravel\Socialite\Two\LinkedInProvider
     /**
      * {@inheritdoc}
      */
-    protected function mapUserToObject(array $user)
+    public final function mapUserToObject(array $user):User
     {
         return (new User)->setRaw($user)->map([
             'id' => $user['sub'],

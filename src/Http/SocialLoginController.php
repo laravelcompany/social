@@ -7,6 +7,7 @@ use Cornatul\Social\Models\SocialAccountConfiguration;
 use Cornatul\Social\Repositories\SocialConfigurationRepository;
 use Cornatul\Social\Repositories\SocialRepository;
 use Cornatul\Social\Social\CustomLinkedInProvider;
+use Cornatul\Social\Social\CustomTwitterProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
@@ -26,7 +27,7 @@ class SocialLoginController extends \Illuminate\Routing\Controller
 
     protected array $providers = [
         'github' => GithubProvider::class,
-        'twitter' => TwitterProvider::class,
+        'twitter' => CustomTwitterProvider::class,
         'linkedin' => CustomLinkedInProvider::class,
         'facebook' => FacebookProvider::class,
         'google' => GoogleProvider::class,

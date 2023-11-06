@@ -20,12 +20,12 @@ use Illuminate\View\View;
  */
 class SocialController extends Controller
 {
-    protected   SocialRepository $socialRepository;
+    protected  SocialRepository $socialRepository;
 
     public final function __construct(SocialRepository $socialRepository)
     {
-        $this->socialRepository = $socialRepository;
         $this->middleware('auth');
+        $this->socialRepository = $socialRepository;
     }
 
     public final function index(): \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application

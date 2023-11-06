@@ -16,18 +16,23 @@ use Illuminate\View\View;
 
 class SocialCredentialsController extends Controller
 {
-
     private SocialConfigurationRepository $socialConfigurationRepository;
+    private SocialRepository $socialRepository;
 
     public function __construct(
-        SocialConfigurationRepository $socialConfigurationRepository
+        SocialConfigurationRepository $socialConfigurationRepository,
+        SocialRepository $socialRepository
     )
     {
         $this->socialConfigurationRepository = $socialConfigurationRepository;
+
+        $this->socialRepository = $socialRepository;
     }
 
-    public final function create(int $account): View|Application
+    public final function create(int $accountID): View|Application
     {
+        $account = $this->socialRepository->getAccount($accountID);
+
         return view('social::credentials.create', [
             'account' => $account,
         ]);
@@ -72,7 +77,8 @@ class SocialCredentialsController extends Controller
 
         $this->socialConfigurationRepository->createAccountConfiguration($request);
 
-        return redirect()->route('social.index')->with('success', 'Credentials created successfully');
+        return redirect()->route('social.index')
+            ->with('success', 'Credentials created successfully');
     }
 
     /**

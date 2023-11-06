@@ -100,8 +100,7 @@ class SocialConfigurationRepository implements SocialConfiguration
             'configuration' =>json_encode([
                 'client_id' => $request->input('client_id'),
                 'client_secret' => $request->input('client_secret'),
-                'redirect' => $request->input('redirect'),
-                'scopes' => explode(',', $request->input('scopes'))
+                'redirect' => $request->input('redirect')
             ]),
         ]);
     }

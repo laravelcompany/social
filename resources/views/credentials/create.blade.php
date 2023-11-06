@@ -3,7 +3,7 @@
 @section('title', __('Configuration Sharing'))
 
 @section('heading')
-    {{ __('Create Connection for account') }}
+    {{ __('Create Connection for account') }} {{ $account->account }}
 @endsection
 
 @section('content')
@@ -20,7 +20,7 @@
             <form method="post" action="{{ route('social.credentials.save') }}">
                 @csrf
 
-                <input type="hidden" name="account" value="{{ $account }}">
+                <input type="hidden" name="account" value="{{ $account->id }}">
 
                 <div class="form-group">
                     <label for="exampleInputEmail1">
@@ -58,14 +58,6 @@
                     </label>
                     <input type="text" class="form-control" id="exampleInputEmail1" name="redirect"
                            placeholder=" {{ __('Redirect Uri') }}">
-                </div>
-
-                <div class="form-group">
-                    <label for="exampleInputEmail1">
-                        {{ __('Scopes') }}
-                    </label>
-                    <input type="text" class="form-control" id="exampleInputEmail1" name="scopes"
-                           placeholder=" {{ __('Scopes') }}">
                 </div>
 
                 <button type="submit" class="btn btn-primary">Submit</button>

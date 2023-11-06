@@ -3,15 +3,12 @@
 @section('title', __('Social Sharing'))
 
 @section('heading')
-    {{ __('Social Sharing') }}
+    {{ __('Social Sharing') }} {{ $account->account }}
 @endsection
 
 @section('content')
     <!-- Create !-->
     <div class="d-flex flex-column flex-md-row justify-content-between mb-3">
-        <div>
-
-        </div>
         <div>
             <a class="btn btn-primary btn-md btn-flat" href="{{ route('social.credentials.create', ['account' => $account->id]) }}">
                 <i class="fa fa-plus mr-1"></i> Create Connection
@@ -43,7 +40,8 @@
                             {{  $config->type }}
                         </td>
                         <td>
-                           @todo get the access token validation or date when expires for each social account
+                           @todo get the access token validation or date when expires for each social account <br>
+                           @todo get the number of posts for each social account
                         </td>
                         <td class="text-right">
                             <a class="btn btn-info"

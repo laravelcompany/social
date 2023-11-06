@@ -29,13 +29,9 @@ class ShareController extends Controller
     }
 
 
-    public final function send(ShareContract $contract, Request $request): RedirectResponse
+    public final function process(ShareContract $contract, Request $request): RedirectResponse
     {
-        $accounts = SocialAccountConfiguration::where('social_account_id', $request->get('account'))
-            ->whereNotNull('information')->get();
-
-        dd($accounts);
-
+        //todo implementation
         return redirect()->route('social.index');
     }
 }

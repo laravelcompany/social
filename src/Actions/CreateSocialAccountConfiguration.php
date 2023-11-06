@@ -15,7 +15,6 @@ final class CreateSocialAccountConfiguration extends FormRequest
             'client_id' => 'required|string',
             'client_secret' => 'required|string',
             'redirect' => 'required|string',
-            'scopes' => 'nullable|string',
         ];
     }
     public function authorize(): bool

@@ -14,7 +14,6 @@ final class UpdateSocialAccountConfiguration extends FormRequest
             'client_id' => 'required|string',
             'client_secret' => 'required|string',
             'redirect' => 'required|string',
-            'scopes' => 'nullable|string',
         ];
     }
     public function authorize(): bool
