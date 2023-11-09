@@ -3,27 +3,26 @@
 namespace Cornatul\Social\Http;
 
 use Cornatul\Social\DTO\UserInformationDTO;
-use Cornatul\Social\Models\SocialAccountConfiguration;
+use Cornatul\Social\Managers\SocialSessionManager;
 use Cornatul\Social\Repositories\SocialConfigurationRepository;
 use Cornatul\Social\Repositories\SocialRepository;
-use Cornatul\Social\Social\CustomLinkedInProvider;
-use Cornatul\Social\Social\CustomTwitterProvider;
+use Cornatul\Social\LoginProviders\CustomLinkedInProvider;
+use Cornatul\Social\LoginProviders\CustomTwitterProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\FacebookProvider;
 use Laravel\Socialite\Two\GithubProvider;
 use Laravel\Socialite\Two\GoogleProvider;
-use Laravel\Socialite\Two\LinkedInProvider;
-use Laravel\Socialite\Two\TwitterProvider;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
+use RuntimeException;
 
 class SocialLoginController extends \Illuminate\Routing\Controller
 {
     private SocialRepository $socialRepository;
     private SocialConfigurationRepository $socialConfigurationRepository;
+
+    private SocialSessionManager $socialSessionManager;
 
     protected array $providers = [
         'github' => GithubProvider::class,
@@ -33,27 +32,27 @@ class SocialLoginController extends \Illuminate\Routing\Controller
         'google' => GoogleProvider::class,
     ];
 
-    public function __construct(SocialRepository $socialRepository, SocialConfigurationRepository $socialConfigurationRepository)
+    public function __construct(
+        SocialRepository $socialRepository,
+        SocialConfigurationRepository $socialConfigurationRepository
+    )
     {
         $this->socialRepository = $socialRepository;
         $this->socialConfigurationRepository = $socialConfigurationRepository;
+        $this->socialSessionManager =  new SocialSessionManager();
 
     }
 
     /**
-     * @todo move the logic of the session to the repo
      * @throws \Exception
      */
-    public final function login(int $account, string $provider, Request $request): string
+    public final function login(int $account, string $provider): string
     {
-        //remove if we have older session ( this allows us to have multiple accounts)
-        session()->remove('account');
-        session()->remove('provider');
+        $this->socialSessionManager->destroySocialSessions();
 
-        //set a new session
-        session()->put('account', $account);
-        session()->put('provider', $provider);
+        $this->socialSessionManager->setSocialCurrentSessions($account, $provider);
 
+        //todo have a look here for the configuration
         $configuration = $this->socialConfigurationRepository->getAccountConfiguration($account, $provider);
 
         $providerClass = $this->providers[$provider] ?? "The selected '$provider' is not yet implemented";
@@ -67,22 +66,26 @@ class SocialLoginController extends \Illuminate\Routing\Controller
 
     /**
      *
-     * @throws IdentityProviderException
      * @throws RuntimeException
      */
     public final function callback(Request $request): RedirectResponse
     {
         //get the sessions
-        $account = session()->get('account');
-        $provider = session()->get('provider');
+        $account = $this->socialSessionManager->getSocialCurrentSessions('account');
 
+        $provider = $this->socialSessionManager->getSocialCurrentSessions('provider');
 
 
         $providerClass = $this->providers[$provider] ?? "The selected '$provider' is not yet implemented";
+
         $configuration = $this->socialConfigurationRepository->getAccountConfiguration($account, $provider);
+
+        //todo make here a base method on the abstract social provider that
         $user = Socialite::buildProvider($providerClass, (array) $configuration->configuration)
             ->scopes($providerClass->scopes ?? [])
             ->user();
+
+        //todo move this to a repository method
         $data = UserInformationDTO::from([
             // OAuth 2.0 providers
             'token' => $user->token,
@@ -98,9 +101,7 @@ class SocialLoginController extends \Illuminate\Routing\Controller
         ]);
 
         $this->socialConfigurationRepository->saveAccountInformation($data);
-        //todo destroy the sessions
-        session()->remove('account');
-        session()->remove('provider');
+        $this->socialSessionManager->destroySocialSessions();
 
         return redirect()->route('social.index')->with('success', "Account {$provider} connected successfully");
 

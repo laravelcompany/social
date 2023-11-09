@@ -3,12 +3,14 @@
 namespace Cornatul\Social\LoginProviders;
 
 use GuzzleHttp\RequestOptions;
-use Illuminate\Support\Arr;
+use Laravel\Socialite\Two\LinkedInProvider;
 use Laravel\Socialite\Two\User;
 
-class CustomLinkedInProvider extends \Laravel\Socialite\Two\LinkedInProvider
+class CustomLinkedInProvider extends LinkedInProvider
 {
     public $scopes = ["profile","w_member_social", "openid", "email"];
+
+    private string $projections = '(sub,name,picture,given_name,family_name,email,locale,email_verified)';
 
     public final function getUserByToken($token):array
     {
@@ -23,7 +25,7 @@ class CustomLinkedInProvider extends \Laravel\Socialite\Two\LinkedInProvider
                 'X-RestLi-Protocol-Version' => '2.0.0',
             ],
             RequestOptions::QUERY => [
-                'projection' => '(sub,name,picture,given_name,family_name,email,locale,email_verified)',
+                'projection' => $this->projections,
             ],
         ]);
 
@@ -36,14 +38,11 @@ class CustomLinkedInProvider extends \Laravel\Socialite\Two\LinkedInProvider
     public final function mapUserToObject(array $user):User
     {
         return (new User)->setRaw($user)->map([
-            'id' => $user['sub'],
-            'nickname' => null,
-            'name' => $user['name'],
-            'first_name' => $user['name'],
-            'last_name' => $user['given_name'],
-            'email' => $user['email'] ?? null,
-            'avatar' => $user['picture'],
-            'avatar_original' => "",
+            'id' => $user['sub'] ?? "",
+            'name' => $user['name'] ?? "",
+            'last_name' => $user['given_name'] ?? "",
+            'email' => $user['email'] ?? "",
+            'avatar' => $user['picture'] ?? "",
         ]);
     }
 }

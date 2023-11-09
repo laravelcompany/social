@@ -64,55 +64,11 @@ class SocialRepository implements SocialContract
         $account = SocialAccount::find($id);
         $account->delete();
     }
-    /**
-     * @throws RuntimeException
-     */
-    public final function getSocialService(): SocialOauthService
-    {
-
-        $account = request()->session()->get('account');
-        $provider = request()->session()->get('provider');
-
-        $data = SocialAccountConfiguration::where('social_account_id',$account)->where('type',$provider)->first();
-
-        $credentials = ConfigurationDTO::from($data);
-
-        $providerClass = $this->providerClasses[$data->type] ?? null;
-
-        if (is_null($providerClass)) {
-            throw new RuntimeException("This type of service is not supported or it is not implemented yet");
-        }
-
-        $provider = new $providerClass((array) $credentials->configuration);
-
-        if($data->type === self::ACCOUNT_TWITTER){
-            session()->put('oauth2state', $provider->getState());
-            session()->put('oauth2verifier', $provider->getPkceVerifier());
-        }
-
-        return new SocialOauthService($provider);
-    }
-
-
-
-    public final function setSession(int $account, string $provider): self
-    {
-        session()->put('account', $account);
-        session()->put('provider', $provider);
-        return $this;
-    }
-
-    public final function destroySession(): self
-    {
-        session()->remove('account');
-        session()->remove('provider');
-        session()->remove('oauth2state');
-        session()->remove('oauth2verifier');
-        return $this;
-    }
 
 
     /**
      * @throws \Exception
      */
+
+
 }
