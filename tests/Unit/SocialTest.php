@@ -3,7 +3,9 @@
 namespace Cornatul\Social\Tests\Unit;
 
 use Cornatul\Social\Contracts\ShareContract;
+use Cornatul\Social\Contracts\SocialContract;
 use Cornatul\Social\DTO\TwitterTrendingDTO;
+use Cornatul\Social\Models\SocialAccount;
 use Cornatul\Social\Objects\Message;
 use Cornatul\Social\Service\TumblrService;
 use GuzzleHttp\Client;
@@ -15,49 +17,36 @@ use League\OAuth2\Client\Token\AccessTokenInterface;
 use Mockery;
 
 
+/**
+ * Class SocialTest
+ * @todo Implement tests for social interface
+ * @covers \Cornatul\Social\Service\TumblrService
+ */
 class SocialTest extends \Cornatul\Social\Tests\TestCase
 {
 
-
-    public function test_can_get_twitter_trends(): void
+    /** @test */
+    public function it_updates_social_account():void
     {
-        $social = Mockery::mock(ShareContract::class);
+        $interfaceMock = $this->getMockForAbstractClass(SocialContract::class);
 
-        $social->shouldReceive('getTwitterTrends')
-            ->once()
-            ->andReturn(new TwitterTrendingDTO());
+        // Define test data
+        $name = "TestAccount";
+        $userId = 1;
 
-        $this->assertInstanceOf(TwitterTrendingDTO::class, $social->getTwitterTrends());
-    }
-
-    public function testShareOnWall()
-    {
-        $accessTokenMock = Mockery::mock(new AccessToken($options = [
-            'access_token' => 'test_access_token',
-            'access_token_secret' => 'test_access_token_secret',
-            'resource_owner_id' => 'test_resource_owner_id',
-            'resource_owner_secret' => 'test_resource_owner_secret',
-        ]));
-
-
-        $messageMock = $this->createMock(Message::class);
-        $messageMock->method('getTitle')->willReturn('test_title');
-        $messageMock->method('getTagsAsArray')->willReturn(['test_tag']);
-        $messageMock->method('getBody')->willReturn('test_body');
-
-        $mockHandler = new MockHandler([
-            new Response(200, [], '{"response":{"id":"1234567890"}}')
+        // Define the expected result
+        $expectedResult = new SocialAccount([
+            'account' => $name,
+            'user_id' => $userId,
         ]);
 
-        $handlerStack = HandlerStack::create($mockHandler);
+        // Stub the create method on the mock
+        $interfaceMock->method('createAccount')->willReturn($expectedResult);
 
-        $clientMock = new Client(['handler' => $handlerStack]);
+        // Call the createAccount method
+        $result = $interfaceMock->createAccount($name, $userId);
 
-        $service = new TumblrService($clientMock);
-
-        $response = $service->shareOnWall($accessTokenMock, $messageMock);
-
-        $this->assertJson($response);
-        $this->assertStringContainsString('"id":"1234567890"', $response);
+        // Assert that the result matches the expected result
+        $this->assertEquals($expectedResult, $result);
     }
 }

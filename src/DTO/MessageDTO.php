@@ -12,10 +12,15 @@ use Spatie\LaravelData\Data;
  * @method static self fromString(string $string)
  * @method static self fromObject(object $object)
  */
-class ConfigurationDTO extends Data
+class MessageDTO extends Data
 {
-    public ?int $social_account_id;
-    public ?string $type;
-    public ?object $configuration;
-    public ?object $information;
+    public function __construct(
+        public string $message,
+    ) {
+    }
+
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
 }

@@ -3,9 +3,11 @@ declare(strict_types=1);
 namespace Cornatul\Social;
 
 
+use Cornatul\Social\Commands\ShareCommand;
 use Database\Seeders\SocialAccountsSeed;
 use Illuminate\Support\ServiceProvider;
-
+use Cornatul\Social\Contracts\ShareContract;
+use Cornatul\Social\Service\ShareService;
 class SocialServiceProvider extends ServiceProvider
 {
 
@@ -27,5 +29,11 @@ class SocialServiceProvider extends ServiceProvider
         $this->app->singleton(SocialAccountsSeed::class, function ($app) {
             return new SocialAccountsSeed();
         });
+
+        $this->app->bind(ShareContract::class, ShareService::class);
+        $this->commands([
+            ShareCommand::class,
+        ]);
+
     }
 }

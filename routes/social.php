@@ -6,6 +6,8 @@ use Cornatul\Social\Http\GoogleController;
 use Cornatul\Social\Http\LinkedInController;
 use Cornatul\Social\Http\MediumController;
 use Cornatul\Social\Http\SocialController;
+use Cornatul\Social\Http\SocialCredentialsController;
+use Cornatul\Social\Http\SocialLoginController;
 use Cornatul\Social\Http\TumblrController;
 use Cornatul\Social\Http\TwitterController;
 
@@ -14,54 +16,27 @@ Route::group(['middleware' => ['web','auth'],'prefix' => 'social', 'as' => 'soci
     Route::get('/', [SocialController::class, 'index'])->name('index');
     Route::get('/view/{id}', [SocialController::class, 'view'])->name('view');
     Route::get('/edit/{id}', [SocialController::class, 'edit'])->name('edit');
+    Route::post('/update/{id}', [SocialController::class, 'update'])->name('update');
     Route::get('/create', [SocialController::class, 'create'])->name('create');
     Route::post('/save', [SocialController::class, 'save'])->name('save');
     Route::get('/destroy/{id}', [SocialController::class, 'destroy'])->name('destroy');
 
+    //custom login
+    Route::get('/login/{account}/{provider}', [SocialLoginController::class, 'login'])->name('login');
+    Route::get('/login/callback', [SocialLoginController::class, 'callback'])->name('callback');
 
-    //LinkedIN
-    //@todo maybe remove this as is not needed anymore
-    Route::get('/linkedin/', [LinkedInController::class, 'index'])->name('linkedin.index');
+    //credentials
+    Route::get('/credentials/create/{account}', [SocialCredentialsController::class, 'create'])->name('credentials.create');
+    Route::get('/credentials/edit/{account}/{provider}', [SocialCredentialsController::class, 'edit'])->name('credentials.edit');
+    Route::post('/credentials/update', [SocialCredentialsController::class, 'update'])->name('credentials.update');
+    Route::post('/credentials/create/', [SocialCredentialsController::class, 'save'])->name('credentials.save');
+    //delete credentials
+    Route::get('/credentials/destroy/{account}/{provider}', [SocialCredentialsController::class, 'destroy'])->name('credentials.destroy');
 
-    Route::get('/linkedin/{account}/login', [LinkedInController::class, 'login'])->name('linkedin.login');
-    Route::get('/linkedin/callback', [LinkedInController::class, 'callback'])->name('linkedin.callback');
-    Route::post('/linkedin/shareAction', [LinkedInController::class, 'shareAction'])->name('linkedin.shareAction');
-
-    //Google
-//    Route::get('/google', [GoogleController::class, 'index'])->name('google.index');
-//    Route::get('/google/login', [GoogleController::class, 'login'])->name('google.login');
-//    Route::get('/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
-//    Route::post('/google/shareAction', [GoogleController::class, 'shareAction'])->name('google.shareAction');
-//
-
-
-    //Twitter
-    Route::get('/twitter', [TwitterController::class, 'index'])->name('twitter.index');
-    Route::get('/twitter/share', [TwitterController::class, 'share'])->name('twitter.share');
-    Route::post('/twitter/shareAction', [TwitterController::class, 'shareAction'])->name('twitter.shareAction');
-
-    //Github
-    Route::get('/github', [GithubController::class, 'index'])->name('github.index');
-    Route::get('/github/login', [GithubController::class, 'login'])->name('github.login');
-    Route::get('/github/callback', [GithubController::class, 'callback'])->name('github.callback');
-    Route::post('/github/shareAction', [GithubController::class, 'shareAction'])->name('github.shareAction');
+    //Share
+    Route::get('/share/{account}', [\Cornatul\Social\Http\ShareController::class, 'share'])->name('share.create');
+    Route::post('/share/', [\Cornatul\Social\Http\ShareController::class, 'send'])->name('share.send');
 
 
-    //Medium
-//    Route::get('/medium', [MediumController::class, 'index'])->name('medium.index');
-//    Route::post('/medium/shareAction', [MediumController::class, 'shareAction'])->name('medium.shareAction');
-
-    //DevTo
-    Route::get('/devto', [DevToController::class, 'index'])->name('devto.index');
-    Route::post('/devto/shareAction', [DevToController::class, 'shareAction'])->name('devto.shareAction');
-
-
-    //Tumblr
-//    Route::get('/tumblr', [TumblrController::class, 'index'])->name('tumblr.index');
-//    Route::get('/tumblr/login', [TumblrController::class, 'login'])->name('tumblr.login');
-//    Route::get('/tumblr/callback', [TumblrController::class, 'callback'])->name('tumblr.callback');
-//    Route::post('/tumblr/shareAction', [TumblrController::class, 'shareAction'])->name('tumblr.shareAction');
-
-    //To add more social media, just copy the above code and change the name of the social media
-
+    //Linkedin
 });

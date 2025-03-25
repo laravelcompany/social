@@ -18,7 +18,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Cornatul\\Social\\Tests\\": "tests/"
+            "Cornatul\\Social\\Tests\\": "tests/",
+            "Cornatul\\Social\\Factories\\": "database/factories/"
         }
     },
     "require": {

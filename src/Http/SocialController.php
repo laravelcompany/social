@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Cornatul\Social\Http;
 use Cornatul\Social\Actions\CreateNewSocialAccount;
+use Cornatul\Social\Contracts\SocialContract;
 use Cornatul\Social\Models\SocialAccount;
 use Cornatul\Social\Repositories\SocialRepository;
 use Illuminate\Http\RedirectResponse;
@@ -19,7 +20,15 @@ use Illuminate\View\View;
  */
 class SocialController extends Controller
 {
-    public final function index(): View
+    protected  SocialRepository $socialRepository;
+
+    public final function __construct(SocialRepository $socialRepository)
+    {
+        $this->middleware('auth');
+        $this->socialRepository = $socialRepository;
+    }
+
+    public final function index(): \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
     {
         $accounts = SocialAccount::paginate();
         return view('social::index',
@@ -27,9 +36,9 @@ class SocialController extends Controller
         );
     }
 
-    public final function view(int $id): View
+    public final function view(int $accountID): View
     {
-        $account = SocialAccount::with('configuration')->find($id);
+        $account = $this->socialRepository->getAccount($accountID);
         return view('social::view',
         	compact('account')
         );
@@ -37,19 +46,17 @@ class SocialController extends Controller
 
     public final function create(): View
     {
-        return view('social::create',
-        );
+        return view('social::create');
     }
 
     public final function save(CreateNewSocialAccount $request, SocialRepository $repository): RedirectResponse
     {
-
-        $account = $repository->createAccount(
+        $repository->createAccount(
             $request->get('name'),
             (int) $request->get('user_id')
         );
 
-        return redirect()->route('social.index')->withMessage('Account has been saved');
+        return redirect()->route('social.index')->with('success','Account has been saved');
     }
 
 
@@ -62,15 +69,15 @@ class SocialController extends Controller
     }
 
 
-    public final function update(int $id, SocialRepository $repository, CreateNewSocialAccount $request): View
+    public final function update(int $id, SocialRepository $repository, CreateNewSocialAccount $request): RedirectResponse
     {
-        $account = $repository->updateAccount(
+        $repository->updateAccount(
             $id,
             $request->get('name'),
-            $request->get('user_id')
+            (int) $request->get('user_id')
         );
 
-        return redirect()->route('social.index')->withMessage('Account has been updated');
+        return redirect()->route('social.index')->with('success', 'Social Account updated!');
     }
 
 
